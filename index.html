@@ -11,12 +11,11 @@
         body {
             margin: 0; padding: 0;
             font-family: 'Roboto', 'Noto Sans JP', sans-serif;
-            background-color: #f0f2f5; /* Google系グレー */
+            background-color: #f0f2f5;
             color: #202124;
             min-height: 100vh;
         }
 
-        /* 共通コンテナ */
         .container {
             max-width: 480px;
             margin: 0 auto;
@@ -26,14 +25,14 @@
             padding-bottom: 40px;
         }
 
-        /* ▼ ログイン前フォーム用（中央寄せ） ▼ */
+        /* ログイン画面用 */
         .center-screen {
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             height: 100vh; padding: 20px; box-sizing: border-box;
             background: #fff;
         }
 
-        /* --- ヘッダーエリア（プロフィール要約） --- */
+        /* --- ヘッダーエリア --- */
         .profile-header {
             padding: 30px 20px 20px;
             text-align: center;
@@ -41,7 +40,6 @@
             border-bottom: 1px solid #eee;
         }
 
-        /* アイコンリング */
         .icon-wrapper {
             width: 84px; height: 84px;
             border-radius: 50%;
@@ -58,15 +56,19 @@
         
         /* リング色設定 */
         .ring-rainbow { background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4); animation: spin 4s linear infinite; }
-        .ring-sound { background: #1a73e8; box-shadow: 0 0 15px rgba(26, 115, 232, 0.3); }
-        .ring-light { background: #fa7b17; box-shadow: 0 0 15px rgba(250, 123, 23, 0.3); }
-        .ring-stage { background: #34A853; box-shadow: 0 0 15px rgba(52, 168, 83, 0.3); }
-        .ring-video { background: #EA4335; box-shadow: 0 0 15px rgba(234, 67, 53, 0.3); }
+        .ring-sound { background: #1a73e8; box-shadow: 0 0 15px rgba(26, 115, 232, 0.3); } /* 青 */
+        .ring-light { background: #fa7b17; box-shadow: 0 0 15px rgba(250, 123, 23, 0.3); } /* オレンジ */
+        .ring-stage { background: #34A853; box-shadow: 0 0 15px rgba(52, 168, 83, 0.3); } /* 緑 */
+        .ring-video { background: #EA4335; box-shadow: 0 0 15px rgba(234, 67, 53, 0.3); } /* 赤 */
 
-        .header-name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
-        .header-email { font-size: 13px; color: #5f6368; margin-bottom: 10px; }
+        .header-name { font-size: 20px; font-weight: bold; margin-bottom: 8px; }
 
-        /* バッジ */
+        /* バッジエリア（担当と役職を横並び） */
+        .badge-container {
+            display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;
+        }
+
+        /* 担当バッジ（色付き） */
         .job-badge {
             font-size: 11px; font-weight: bold;
             padding: 4px 12px; border-radius: 20px;
@@ -79,36 +81,31 @@
         .badge-video { background-color: #fce8e6; color: #EA4335; }
         .badge-rainbow { background: linear-gradient(90deg, #fce8e6, #fef0e0, #e6f4ea, #e8f0fe); color: #5f6368; }
 
-        /* --- タブナビゲーション --- */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid #dadce0;
-            background: #fff;
-            position: sticky; top: 0; /* スクロールしても上に張り付く */
-            z-index: 10;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 15px 0;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 500;
-            color: #5f6368;
-            cursor: pointer;
-            position: relative;
-        }
-        .tab-btn.active {
-            color: #1a73e8;
-        }
-        .tab-btn.active::after {
-            content: '';
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            height: 3px;
-            background: #1a73e8;
-            border-radius: 3px 3px 0 0;
+        /* ★役職バッジ（以前のデザイン） */
+        .role-badge {
+            font-size: 11px; font-weight: bold;
+            padding: 4px 12px; border-radius: 20px;
+            display: inline-block;
+            background-color: #1a73e8; color: white; /* 濃い青背景に白文字 */
         }
 
-        /* --- コンテンツリスト --- */
+        /* --- タブ --- */
+        .tabs {
+            display: flex; border-bottom: 1px solid #dadce0;
+            background: #fff; position: sticky; top: 0; z-index: 10;
+        }
+        .tab-btn {
+            flex: 1; padding: 15px 0; text-align: center;
+            font-size: 14px; font-weight: 500; color: #5f6368;
+            cursor: pointer; position: relative;
+        }
+        .tab-btn.active { color: #1a73e8; }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%;
+            height: 3px; background: #1a73e8; border-radius: 3px 3px 0 0;
+        }
+
+        /* --- コンテンツ --- */
         .content-area { padding: 10px 0; }
         .section-title {
             padding: 20px 20px 10px;
@@ -125,16 +122,13 @@
         .list-value { font-size: 15px; color: #202124; font-weight: 500; text-align: right; }
         
         .security-alert {
-            margin: 20px;
-            padding: 15px;
-            background: #e8f0fe;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #1a73e8;
+            margin: 20px; padding: 15px;
+            background: #e8f0fe; border-radius: 8px;
+            font-size: 13px; color: #1a73e8;
             display: flex; align-items: center; gap: 10px;
         }
 
-        /* フォーム部品（ログイン用） */
+        /* フォーム部品 */
         .input-group { width: 100%; margin-bottom: 20px; text-align: left; }
         label { display: block; font-size: 12px; color: #5f6368; margin-bottom: 8px; }
         input {
@@ -202,7 +196,11 @@
                 <img id="myIcon" src="" class="profile-icon">
             </div>
             <div id="displayName" class="header-name"></div>
-            <div id="jobBadge" class="job-badge hidden"></div>
+            
+            <div class="badge-container">
+                <div id="jobBadge" class="job-badge hidden"></div>
+                <div id="roleBadge" class="role-badge hidden"></div>
+            </div>
         </div>
 
         <div class="tabs">
@@ -232,10 +230,6 @@
                 <span class="list-label">担当</span>
                 <span id="showJob" class="list-value"></span>
             </div>
-            <div id="roleRow" class="list-item hidden">
-                <span class="list-label">役職</span>
-                <span id="showRole" class="list-value" style="color:#1a73e8; font-weight:bold;"></span>
-            </div>
         </div>
 
         <div id="tab-security" class="content-area hidden">
@@ -250,7 +244,7 @@
                 <span id="lastLoginDate" class="list-value">...</span>
             </div>
             <div class="list-item">
-                <span class="list-label">認証プロバイダ</span>
+                <span class="list-label">認証方式</span>
                 <span class="list-value">LINE Login</span>
             </div>
             
@@ -261,7 +255,7 @@
             </div>
             <div class="list-item">
                 <span class="list-label">バージョン</span>
-                <span class="list-value">v1.2.0</span>
+                <span class="list-value">v1.3.0</span>
             </div>
         </div>
 
@@ -288,13 +282,9 @@
         let registerMode = "";
         let foundMasterDoc = null; 
 
-        // グローバル関数としてタブ切り替えを定義
         window.switchTab = (tabName) => {
-            // ボタンのアクティブ化
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-
-            // コンテンツの表示切り替え
             document.getElementById('tab-home').classList.add('hidden');
             document.getElementById('tab-security').classList.add('hidden');
             document.getElementById('tab-' + tabName).classList.remove('hidden');
@@ -312,26 +302,15 @@
                 const userSnap = await getDoc(userRef);
 
                 if (userSnap.exists()) {
-                    // データあり -> マイページ表示
                     const currentData = userSnap.data();
-                    
-                    // ログイン日時更新
-                    await setDoc(userRef, { 
-                        lastLogin: serverTimestamp(),
-                        icon: profile.pictureUrl 
-                    }, { merge: true });
-
+                    await setDoc(userRef, { lastLogin: serverTimestamp(), icon: profile.pictureUrl }, { merge: true });
                     currentData.icon = profile.pictureUrl;
-                    // TimestampオブジェクトをDateに変換して渡す
                     renderDashboard(currentData, userSnap.id);
-
                 } else {
-                    // データなし -> ログインフォーム表示
                     document.getElementById("authContainer").classList.remove("hidden");
                     document.getElementById("nameForm").classList.remove("hidden");
                 }
 
-                // --- イベントリスナー設定 ---
                 document.getElementById("checkNameBtn").addEventListener("click", async () => {
                     const inputName = document.getElementById("inputSearchName").value.trim();
                     if (!inputName) return;
@@ -389,7 +368,6 @@
             } catch(err) { console.error(err); }
         }
 
-        // 登録フォーム表示
         function showRegisterForm(name, kana, sId, isReadOnly, job) {
             document.getElementById("nameForm").classList.add("hidden");
             document.getElementById("registerForm").classList.remove("hidden");
@@ -410,14 +388,13 @@
             if(sId) document.getElementById("regStudentId").readOnly = true;
         }
 
-        // ダッシュボード描画
         function renderDashboard(data, docId) {
             document.getElementById("authContainer").classList.add("hidden");
             document.getElementById("dashboardContainer").classList.remove("hidden");
 
-            // ヘッダー情報
+            // ヘッダー: アイコン
             const iconWrapper = document.getElementById("iconWrapper");
-            iconWrapper.className = "icon-wrapper"; // リセット
+            iconWrapper.className = "icon-wrapper";
             if (data.org === "urakata") {
                  let ringClass = "ring-rainbow";
                  if(data.job === "sound") ringClass = "ring-sound";
@@ -429,6 +406,7 @@
             document.getElementById("myIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
             document.getElementById("displayName").innerText = data.lineDisplayName;
 
+            // ヘッダー: 担当バッジ
             const jobBadge = document.getElementById("jobBadge");
             if(data.org === "urakata") {
                 jobBadge.className = "job-badge " + getJobBadgeClass(data.job);
@@ -440,6 +418,15 @@
                 jobBadge.classList.remove("hidden");
             }
 
+            // ヘッダー: ★役職バッジ（ここに追加）
+            const roleBadge = document.getElementById("roleBadge");
+            if(data.role) {
+                roleBadge.innerText = data.role;
+                roleBadge.classList.remove("hidden");
+            } else {
+                roleBadge.classList.add("hidden");
+            }
+
             // ホームタブ情報
             document.getElementById("showName").innerText = data.name;
             document.getElementById("showKana").innerText = data.kana || "-";
@@ -447,14 +434,8 @@
             document.getElementById("showOrg").innerText = (data.org === "urakata") ? "裏方部" : "LMC";
             document.getElementById("showJob").innerText = getJobLabel(data.job);
             
-            if(data.role) {
-                document.getElementById("roleRow").classList.remove("hidden");
-                document.getElementById("showRole").innerText = data.role;
-            }
-
-            // セキュリティタブ情報
+            // セキュリティタブ
             if (data.lastLogin) {
-                // Firebase Timestamp -> Date変換
                 const date = data.lastLogin.toDate();
                 const dateStr = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
                 document.getElementById("lastLoginDate").innerText = dateStr;
