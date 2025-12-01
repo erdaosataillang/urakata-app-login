@@ -79,9 +79,11 @@
         }
         .menu-icon-wrapper .material-icons { font-size: 24px; }
 
-        .icon-basic { background-color: #c4eed0; color: #0f5223; }
-        .icon-security { background-color: #c2e7ff; color: #001d35; }
-        .icon-card { background-color: #ffdbc1; color: #bf360c; }
+        /* アイコン背景色設定 */
+        .icon-basic { background-color: #c4eed0; color: #0f5223; } /* 緑 */
+        .icon-security { background-color: #c2e7ff; color: #001d35; } /* 青 */
+        .icon-apps { background-color: #f3e5f5; color: #7b1fa2; } /* ★追加: 紫 */
+        .icon-card { background-color: #ffdbc1; color: #bf360c; } /* オレンジ */
 
         .menu-content { flex-grow: 1; }
         .menu-title { font-size: 16px; font-weight: 500; color: #1f1f1f; display: block; margin-bottom: 4px; }
@@ -112,47 +114,38 @@
 
         .content-area { padding: 0 16px 40px; }
         
-        /* テキストエリア（左寄せ） */
         .page-description { text-align: left; margin-bottom: 24px; padding: 0 4px; }
         .page-hero-title { font-size: 22px; color: #1f1f1f; margin-bottom: 12px; line-height: 1.3; }
         .page-hero-text { font-size: 14px; color: #444746; line-height: 1.6; }
         .section-header { font-size: 20px; color: #1f1f1f; margin-bottom: 8px; margin-top: 30px; padding-left: 4px; }
         .section-subtext { font-size: 14px; color: #444746; margin-bottom: 16px; padding-left: 4px; }
 
-        /* 情報カード (パディング0で端まで線を引く) */
+        /* カードとリスト */
         .info-card {
             background: white; border-radius: 20px; padding: 0;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 16px; overflow: hidden;
         }
         
-        /* リスト行のデザイン修正 */
         .list-row {
             display: flex; align-items: center;
-            padding: 16px 20px; /* 余白 */
-            border-bottom: 1px solid #e0e3e7; /* 端まで引く線 */
+            padding: 16px 20px;
+            border-bottom: 1px solid #e0e3e7;
             background: white;
         }
         .list-row:last-child { border-bottom: none; }
         .list-row:active { background-color: #f8f9fa; }
 
         .row-icon { color: #5f6368; margin-right: 16px; font-size: 24px; }
-        
         .list-text-container { flex-grow: 1; display: flex; flex-direction: column; }
-        
-        /* 項目名（氏名など） */
         .list-label { font-size: 16px; color: #1f1f1f; margin-bottom: 4px; font-weight: 400; }
-        
-        /* 値（本名など） - 薄く小さく */
         .list-value { font-size: 14px; color: #5f6368; word-break: break-all; }
 
-        /* セキュリティアラート */
         .security-alert {
             background:#e8f0fe; color:#0b57d0; padding:16px 20px; 
             border-radius:20px; margin-bottom:20px; 
             font-size:14px; display:flex; gap:12px; align-items:center;
         }
 
-        /* 会員証カード */
         .member-card {
             background: #ffffff; padding: 40px 30px;
             border-radius: 28px;
@@ -263,6 +256,17 @@
                 <span class="material-icons menu-arrow">chevron_right</span>
             </button>
             
+            <button class="menu-btn" onclick="openPage('apps')">
+                <div class="menu-icon-wrapper icon-apps">
+                    <span class="material-icons">apps</span>
+                </div>
+                <div class="menu-content">
+                    <span class="menu-title">アプリと連携</span>
+                    <span class="menu-subtitle">アプリとサービス、LMCアプリとの連携</span>
+                </div>
+                <span class="material-icons menu-arrow">chevron_right</span>
+            </button>
+
             <button class="menu-btn" onclick="openPage('memberCard')">
                 <div class="menu-icon-wrapper icon-card">
                     <span class="material-icons">badge</span>
@@ -284,7 +288,6 @@
             <div class="page-title">基本情報</div>
         </div>
         <div class="content-area">
-            
             <div class="page-description">
                 <div class="page-hero-title">裏方部サービスの<br>プロフィール情報</div>
                 <div class="page-hero-text">
@@ -342,7 +345,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -354,7 +356,6 @@
             <div class="page-title">セキュリティとログイン</div>
         </div>
         <div class="content-area">
-            
             <div class="security-alert">
                 <span class="material-icons">verified_user</span>
                 <div>
@@ -383,6 +384,32 @@
                     <div class="list-text-container">
                         <div class="list-label">ユーザーID</div>
                         <div id="showUserId" class="list-value" style="font-size:12px; color:#999;"></div>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="material-icons row-icon">privacy_tip</span>
+                    <div class="list-text-container">
+                        <div class="list-label">データとプライバシー</div>
+                        <div class="list-value">データの削除、アカウントの停止</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-apps" class="page-container">
+        <div class="page-header">
+            <button class="back-btn" onclick="closePage('apps')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <div class="page-title">アプリと連携</div>
+        </div>
+        <div class="content-area">
+            <div class="info-card">
+                <div class="list-row">
+                    <div class="list-text-container">
+                        <div class="list-label">現在連携中のアプリはありません</div>
+                        <div class="list-value" style="margin-top:4px;">サードパーティ製のアプリやサービスと連携するとここに表示されます。</div>
                     </div>
                 </div>
             </div>
@@ -547,7 +574,6 @@
             document.getElementById("showOrg").innerText = (data.org === "urakata") ? "裏方部" : "LMC";
             document.getElementById("showJob").innerText = getJobLabel(data.job);
             
-            // 役職表示
             const roleRowPage = document.getElementById("roleRowPage");
             if (data.role) {
                 document.getElementById("showRoleInPage").innerText = data.role;
