@@ -12,31 +12,30 @@
         body {
             margin: 0; padding: 0;
             font-family: 'Roboto', 'Noto Sans JP', sans-serif;
-            background-color: #f0f2f5;
-            color: #202124;
+            background-color: rgb(241, 244, 249); /* 指定の背景色 */
+            color: #1f1f1f;
             min-height: 100vh;
         }
 
         .container {
-            max-width: 480px; margin: 0 auto; background: white;
+            max-width: 480px; margin: 0 auto;
             min-height: 100vh; position: relative;
+            background-color: rgb(241, 244, 249); /* 全体もこの色に */
         }
 
-        /* --- ヘッダーエリア（左寄せデザイン） --- */
+        /* --- ヘッダーエリア --- */
         .profile-header {
-            padding: 20px 24px;
-            background: #fff;
+            padding: 24px 20px;
+            background: rgb(241, 244, 249); /* 背景色と統一 */
             display: flex; align-items: center; gap: 20px;
-            border-bottom: 1px solid #f1f3f4;
+            /* 線は削除してスッキリさせる */
         }
 
-        /* アイコンリング */
         .icon-wrapper {
-            width: 72px; height: 72px; /* 少し小さめに */
+            width: 72px; height: 72px;
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            background: #dadce0;
-            flex-shrink: 0; /* 縮まないように */
+            background: #dadce0; flex-shrink: 0;
         }
         .profile-icon {
             width: 66px; height: 66px;
@@ -46,58 +45,91 @@
         
         /* リング色 */
         .ring-rainbow { background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4); animation: spin 4s linear infinite; }
-        .ring-sound { background: #1a73e8; box-shadow: 0 0 10px rgba(26, 115, 232, 0.3); } /* 青 */
-        .ring-light { background: #fa7b17; box-shadow: 0 0 10px rgba(250, 123, 23, 0.3); } /* オレンジ */
-        .ring-stage { background: #34A853; box-shadow: 0 0 10px rgba(52, 168, 83, 0.3); } /* 緑 */
-        .ring-video { background: #EA4335; box-shadow: 0 0 10px rgba(234, 67, 53, 0.3); } /* 赤 */
+        .ring-sound { background: #1a73e8; box-shadow: 0 0 10px rgba(26, 115, 232, 0.3); }
+        .ring-light { background: #fa7b17; box-shadow: 0 0 10px rgba(250, 123, 23, 0.3); }
+        .ring-stage { background: #34A853; box-shadow: 0 0 10px rgba(52, 168, 83, 0.3); }
+        .ring-video { background: #EA4335; box-shadow: 0 0 10px rgba(234, 67, 53, 0.3); }
 
-        /* 右側のテキストエリア */
         .header-text { flex-grow: 1; }
-        
         .name-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
-        .header-name { font-size: 20px; font-weight: bold; color: #202124; }
-        .header-san { font-size: 13px; color: #5f6368; }
-        
-        /* 役職テキスト */
-        .header-role { font-size: 14px; color: #5f6368; font-weight: 500; }
+        .header-name { font-size: 22px; font-weight: bold; color: #1f1f1f; }
+        .header-san { font-size: 14px; color: #444746; }
+        .header-role { font-size: 14px; color: #444746; font-weight: 500; }
 
-        /* --- メニューリスト（ボタン） --- */
-        .menu-list { padding: 10px 0; }
+        /* --- メニューリスト（島デザイン） --- */
+        .menu-list {
+            padding: 0 16px 40px; /* 横余白を追加 */
+            display: flex; flex-direction: column; gap: 12px; /* ボタン間の隙間 */
+        }
         .menu-btn {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 18px 24px;
-            background: white; border: none; width: 100%;
+            padding: 20px;
+            background: #ffffff; /* ボタンは白 */
+            border: none; width: 100%;
             text-align: left; cursor: pointer;
-            border-bottom: 1px solid #f1f3f4;
-            transition: background 0.2s;
+            border-radius: 20px; /* 角丸を強くして島っぽく */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* ほんのり影 */
+            transition: transform 0.1s, box-shadow 0.1s;
         }
-        .menu-btn:active { background-color: #f5f5f5; }
-        .menu-icon { margin-right: 16px; color: #1a73e8; }
-        .menu-text { flex-grow: 1; font-size: 16px; font-weight: 500; color: #3c4043; }
-        .menu-arrow { color: #9aa0a6; }
+        .menu-btn:active { transform: scale(0.98); background-color: #f8f9fa; }
+        
+        .menu-content { flex-grow: 1; margin-left: 16px; margin-right: 16px;}
+        .menu-title { font-size: 16px; font-weight: 500; color: #1f1f1f; display: block; margin-bottom: 4px; }
+        .menu-subtitle { font-size: 12px; color: #444746; display: block; line-height: 1.4; }
+        
+        .menu-icon { color: #0b57d0; font-size: 24px; }
+        .menu-arrow { color: #c4c7c5; font-size: 20px; }
 
-        /* --- 詳細ページ（スライドイン用） --- */
+        /* --- 詳細ページ --- */
         .page-container {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: white; z-index: 100;
-            transform: translateX(100%); transition: transform 0.3s ease;
+            background: rgb(241, 244, 249); z-index: 100;
+            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
             overflow-y: auto; max-width: 480px; margin: 0 auto;
         }
         .page-container.open { transform: translateX(0); }
 
         .page-header {
-            padding: 15px 10px; display: flex; align-items: center;
-            border-bottom: 1px solid #dadce0; position: sticky; top: 0; background: white;
+            padding: 12px 16px; display: flex; align-items: center;
+            background: rgb(241, 244, 249); position: sticky; top: 0; z-index: 10;
         }
-        .back-btn { background: none; border: none; cursor: pointer; padding: 10px; color: #5f6368; }
-        .page-title { font-size: 18px; font-weight: 500; margin-left: 10px; }
+        /* 戻るボタンの左寄せ調整 */
+        .back-btn {
+            background: none; border: none; cursor: pointer;
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            color: #1f1f1f; margin-right: 8px;
+            margin-left: -8px; /* 親のpaddingを相殺して左端に寄せる */
+        }
+        .back-btn:active { background-color: rgba(0,0,0,0.05); }
+        .page-title { font-size: 20px; font-weight: 400; color: #1f1f1f; }
 
-        .content-area { padding: 20px; }
+        .content-area { padding: 16px; }
+        
+        /* 情報表示カード */
+        .info-card {
+            background: white; border-radius: 20px; padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
         .info-group { margin-bottom: 24px; }
+        .info-group:last-child { margin-bottom: 0; border-bottom: none; }
+        
         .info-label { font-size: 12px; color: #5f6368; margin-bottom: 4px; display: block; }
-        .info-value { font-size: 16px; color: #202124; border-bottom: 1px solid #eee; padding-bottom: 8px; display: block; }
+        .info-value { font-size: 16px; color: #1f1f1f; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; display: block; }
+        .info-value:last-child { border-bottom: none; }
 
-        /* その他（ログイン画面など） */
+        /* --- 会員証デザイン (前のカードスタイルを再現) --- */
+        .member-card {
+            background: #ffffff; padding: 40px 30px;
+            border-radius: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center; margin-top: 20px;
+        }
+        .member-card h2 { margin-top: 0; color: #1f1f1f; }
+        .member-card .icon-wrapper { margin: 0 auto 20px; width: 100px; height: 100px; }
+        .member-card .profile-icon { width: 92px; height: 92px; border-width: 4px; }
+        
+        /* ログイン画面 */
         .center-screen {
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             height: 100vh; padding: 20px; box-sizing: border-box; background: #fff;
@@ -110,12 +142,13 @@
         }
         button {
             width: 100%; padding: 12px; border: none; border-radius: 4px;
-            background-color: #1a73e8; color: white; font-weight: 500; cursor: pointer;
+            background-color: #0b57d0; color: white; font-weight: 500; cursor: pointer;
         }
-        button.secondary { background: white; color: #1a73e8; border: 1px solid #dadce0; margin-top: 10px; }
+        button.secondary { background: white; color: #0b57d0; border: 1px solid #dadce0; margin-top: 10px; }
+        
         .error { color: #d93025; font-size: 12px; margin-top: 5px; }
         .hidden { display: none !important; }
-        .job-badge { /* 登録画面用のバッジ */ font-size: 11px; font-weight: bold; padding: 4px 12px; border-radius: 20px; background-color: #f1f3f4; color: #5f6368; }
+        .job-badge { font-size: 11px; font-weight: bold; padding: 4px 12px; border-radius: 20px; background-color: #f1f3f4; color: #5f6368; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -175,18 +208,29 @@
 
         <div class="menu-list">
             <button class="menu-btn" onclick="openPage('basicInfo')">
-                <span class="material-icons menu-icon">person</span>
-                <span class="menu-text">基本情報</span>
+                <span class="material-icons menu-icon">person_outline</span>
+                <div class="menu-content">
+                    <span class="menu-title">基本情報</span>
+                    <span class="menu-subtitle">名前、学籍番号、所属サークル</span>
+                </div>
                 <span class="material-icons menu-arrow">chevron_right</span>
             </button>
+            
             <button class="menu-btn" onclick="openPage('security')">
-                <span class="material-icons menu-icon">security</span>
-                <span class="menu-text">セキュリティ</span>
+                <span class="material-icons menu-icon">lock_outline</span>
+                <div class="menu-content">
+                    <span class="menu-title">セキュリティとログイン</span>
+                    <span class="menu-subtitle">ログイン方法、最近のセキュリティイベント</span>
+                </div>
                 <span class="material-icons menu-arrow">chevron_right</span>
             </button>
-             <button class="menu-btn" onclick="alert('現在お知らせはありません')">
-                <span class="material-icons menu-icon">notifications</span>
-                <span class="menu-text">お知らせ</span>
+            
+            <button class="menu-btn" onclick="openPage('memberCard')">
+                <span class="material-icons menu-icon">badge</span>
+                <div class="menu-content">
+                    <span class="menu-title">会員証</span>
+                    <span class="menu-subtitle">デジタル会員証を表示</span>
+                </div>
                 <span class="material-icons menu-arrow">chevron_right</span>
             </button>
         </div>
@@ -200,25 +244,27 @@
             <div class="page-title">基本情報</div>
         </div>
         <div class="content-area">
-            <div class="info-group">
-                <span class="info-label">氏名</span>
-                <span id="showName" class="info-value"></span>
-            </div>
-            <div class="info-group">
-                <span class="info-label">ふりがな</span>
-                <span id="showKana" class="info-value"></span>
-            </div>
-            <div class="info-group">
-                <span class="info-label">学籍番号</span>
-                <span id="showStudentId" class="info-value"></span>
-            </div>
-            <div class="info-group">
-                <span class="info-label">所属</span>
-                <span id="showOrg" class="info-value"></span>
-            </div>
-            <div class="info-group">
-                <span class="info-label">担当区分</span>
-                <span id="showJob" class="info-value"></span>
+            <div class="info-card">
+                <div class="info-group">
+                    <span class="info-label">氏名</span>
+                    <span id="showName" class="info-value"></span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">ふりがな</span>
+                    <span id="showKana" class="info-value"></span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">学籍番号</span>
+                    <span id="showStudentId" class="info-value"></span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">所属サークル</span>
+                    <span id="showOrg" class="info-value"></span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">担当</span>
+                    <span id="showJob" class="info-value"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -228,24 +274,57 @@
             <button class="back-btn" onclick="closePage('security')">
                 <span class="material-icons">arrow_back</span>
             </button>
-            <div class="page-title">セキュリティ</div>
+            <div class="page-title">セキュリティとログイン</div>
         </div>
         <div class="content-area">
-            <div style="background:#e8f0fe; color:#1a73e8; padding:15px; border-radius:8px; margin-bottom:20px; font-size:14px; display:flex; gap:10px; align-items:center;">
-                <span class="material-icons">check_circle</span>
-                アカウントは保護されています
+            <div class="info-card">
+                <div style="background:#e8f0fe; color:#0b57d0; padding:15px; border-radius:12px; margin-bottom:20px; font-size:14px; display:flex; gap:10px; align-items:center;">
+                    <span class="material-icons">verified_user</span>
+                    アカウントは保護されています
+                </div>
+                <div class="info-group">
+                    <span class="info-label">最終ログイン日時</span>
+                    <span id="lastLoginDate" class="info-value">...</span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">ログイン方法</span>
+                    <span class="info-value">LINE Login (認証済み)</span>
+                </div>
+                <div class="info-group">
+                    <span class="info-label">ユーザーID</span>
+                    <span id="showUserId" class="info-value" style="font-size:12px; color:#999; border:none;"></span>
+                </div>
             </div>
-            <div class="info-group">
-                <span class="info-label">最終ログイン日時</span>
-                <span id="lastLoginDate" class="info-value">...</span>
-            </div>
-            <div class="info-group">
-                <span class="info-label">ログインプロバイダ</span>
-                <span class="info-value">LINE Login</span>
-            </div>
-            <div class="info-group">
-                <span class="info-label">ユーザーID</span>
-                <span id="showUserId" class="info-value" style="font-size:12px; color:#999; border:none;"></span>
+        </div>
+    </div>
+
+    <div id="page-memberCard" class="page-container">
+        <div class="page-header">
+            <button class="back-btn" onclick="closePage('memberCard')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <div class="page-title">会員証</div>
+        </div>
+        <div class="content-area">
+            <div class="member-card">
+                <div style="font-weight:bold; font-size:20px; color:#5f6368; margin-bottom:20px;">
+                    <span style="color:#4285f4;">G</span>Member
+                </div>
+                
+                <div id="cardIconWrapper" class="icon-wrapper">
+                    <img id="cardIcon" src="" class="profile-icon">
+                </div>
+                
+                <div id="cardName" style="font-size:22px; font-weight:bold; margin-bottom:8px;"></div>
+                <div id="cardRoleBadge" class="job-badge hidden" style="margin-bottom:20px;"></div>
+                
+                <div style="text-align:left; background:#f8f9fa; padding:20px; border-radius:12px; border:1px solid #dadce0;">
+                     <div style="font-size:12px; color:#5f6368;">学籍番号</div>
+                     <div id="cardStudentId" style="font-size:16px; font-weight:500; margin-bottom:10px;"></div>
+                     
+                     <div style="font-size:12px; color:#5f6368;">所属</div>
+                     <div id="cardOrg" style="font-size:16px; font-weight:500;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -271,7 +350,6 @@
         let registerMode = "";
         let foundMasterDoc = null; 
 
-        // ページ遷移アニメーション用関数
         window.openPage = (pageId) => {
             document.getElementById('page-' + pageId).classList.add('open');
         };
@@ -366,43 +444,60 @@
             document.getElementById("authContainer").classList.add("hidden");
             document.getElementById("dashboardContainer").classList.remove("hidden");
 
-            // ヘッダー: アイコンリング
+            // --- ヘッダー ---
             const iconWrapper = document.getElementById("iconWrapper");
             iconWrapper.className = "icon-wrapper";
+            
+            // リング色の決定
+            let ringClass = "";
             if (data.org === "urakata") {
-                 let ringClass = "ring-rainbow";
                  if(data.job === "sound") ringClass = "ring-sound";
-                 if(data.job === "light") ringClass = "ring-light";
-                 if(data.job === "stage") ringClass = "ring-stage";
-                 if(data.job === "video") ringClass = "ring-video";
+                 else if(data.job === "light") ringClass = "ring-light";
+                 else if(data.job === "stage") ringClass = "ring-stage";
+                 else if(data.job === "video") ringClass = "ring-video";
+                 else ringClass = "ring-rainbow";
                  iconWrapper.classList.add(ringClass);
+            } else {
+                 // LMCの場合はデフォルト(グレー)
             }
+            
             document.getElementById("myIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
             document.getElementById("displayName").innerText = data.lineDisplayName;
+            document.getElementById("roleText").innerText = data.role || "";
 
-            // ヘッダー: 役職 (担当名は非表示)
-            const roleText = document.getElementById("roleText");
-            if(data.role) {
-                roleText.innerText = data.role; // 「部長」など
-            } else {
-                roleText.innerText = ""; // 役職なしなら空欄
-            }
-
-            // 詳細ページへのデータ埋め込み
+            // --- 基本情報ページ ---
             document.getElementById("showName").innerText = data.name;
             document.getElementById("showKana").innerText = data.kana || "-";
             document.getElementById("showStudentId").innerText = data.studentId || "-";
             document.getElementById("showOrg").innerText = (data.org === "urakata") ? "裏方部" : "LMC";
             document.getElementById("showJob").innerText = getJobLabel(data.job);
             
+            // --- セキュリティページ ---
             if (data.lastLogin) {
                 const date = data.lastLogin.toDate();
                 const dateStr = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
                 document.getElementById("lastLoginDate").innerText = dateStr;
-            } else {
-                document.getElementById("lastLoginDate").innerText = "今回が初回";
             }
             document.getElementById("showUserId").innerText = docId;
+
+            // --- 会員証ページ（カード） ---
+            const cardIconWrapper = document.getElementById("cardIconWrapper");
+            cardIconWrapper.className = "icon-wrapper"; // Reset
+            if(ringClass) cardIconWrapper.classList.add(ringClass);
+            
+            document.getElementById("cardIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
+            document.getElementById("cardName").innerText = data.name;
+            document.getElementById("cardStudentId").innerText = data.studentId || "未設定";
+            document.getElementById("cardOrg").innerText = (data.org === "urakata") ? "裏方部" : "LMC";
+            
+            // 会員証内にも役職バッジを表示する場合
+            const cardRoleBadge = document.getElementById("cardRoleBadge");
+            if(data.role) {
+                cardRoleBadge.innerText = data.role;
+                cardRoleBadge.classList.remove("hidden");
+            } else {
+                cardRoleBadge.classList.add("hidden");
+            }
         }
 
         function getJobLabel(job) {
