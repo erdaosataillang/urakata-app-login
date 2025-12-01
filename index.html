@@ -5,36 +5,142 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>氏名認証ログイン</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <style>
-        body { padding: 20px; font-family: sans-serif; }
-        .hidden { display: none; }
-        input { display: block; margin: 10px 0; padding: 10px; width: 100%; box-sizing: border-box; }
-        button { padding: 10px 20px; background: #06C755; color: white; border: none; width: 100%; font-size: 16px; margin-top: 10px; }
-        .error { color: red; font-size: 0.9em; }
-    </style>
+   <style>
+    body {
+        margin: 0;
+        padding: 20px;
+        font-family: 'Roboto', 'Noto Sans JP', sans-serif;
+        background-color: #f5f7fd; /* 薄い青みがかった白 */
+        color: #202124;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        box-sizing: border-box;
+    }
+    /* メインのカード */
+    .card {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        width: 100%;
+        max-width: 400px; /* スマホで見やすい幅 */
+        text-align: center;
+    }
+    h1, h2 {
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+    }
+    p {
+        color: #5f6368;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    /* 入力フォーム */
+    input[type="text"] {
+        width: 100%;
+        padding: 13px 15px;
+        margin-bottom: 15px;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        font-size: 16px;
+        box-sizing: border-box; /* はみ出し防止 */
+        transition: border 0.2s;
+    }
+    input[type="text"]:focus {
+        outline: none;
+        border-color: #1a73e8; /* フォーカス時の青色 */
+        border-width: 2px;
+        padding: 12px 14px; /* 線の太さ分調整 */
+    }
+    /* ボタン */
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 24px; /* Googleっぽい丸み */
+        background-color: #0b57d0; /* Googleの濃い青 */
+        color: white;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    button:hover {
+        background-color: #0a4eb9;
+    }
+    /* エラーメッセージ */
+    .error { color: #d93025; font-size: 14px; margin-top: -10px; margin-bottom: 15px; text-align: left; }
+    .hidden { display: none !important; }
+
+    /* マイページ専用のデザイン */
+    .mypage-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        text-align: left;
+    }
+    .profile-icon {
+        width: 64px; height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #f1f3f4;
+    }
+    .user-display-name {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #202124;
+    }
+    .info-box {
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: left;
+        margin-top: 20px;
+    }
+    .info-label { font-size: 13px; color: #5f6368; margin-bottom: 4px; display: block; }
+    .info-value { font-size: 18px; font-weight: 500; color: #202124; margin-bottom: 15px; }
+    .info-value:last-child { margin-bottom: 0; }
+</style>
 </head>
 <body>
-    <h1 id="title">読み込み中...</h1>
+    <div class="card">
+        <h2 id="title">読み込み中...</h2>
 
-    <div id="nameForm" class="hidden">
-        <p>学校に登録されている「本名」を入力してください。</p>
-        <input type="text" id="inputName" placeholder="例: 山田太郎">
-        <p id="nameError" class="error"></p>
-        <button id="checkNameBtn">次へ</button>
-    </div>
+        <div id="nameForm" class="hidden">
+            <p>本人確認を行います。<br>名簿に登録されている「本名（漢字）」を入力してください。</p>
+            <input type="text" id="inputName" placeholder="例: 山田太郎">
+            <p id="nameError" class="error"></p>
+            <button id="checkNameBtn">次へ</button>
+        </div>
 
-    <div id="idForm" class="hidden">
-        <p>認証に成功しました。<br><span id="foundName"></span> さん</p>
-        <p>学籍番号が未登録です。以下に入力して登録を完了してください。<br>(ない場合は空欄でも可)</p>
-        <input type="text" id="inputStudentId" placeholder="学籍番号 (例: 2024001)">
-        <button id="registerBtn">登録する</button>
-    </div>
+        <div id="idForm" class="hidden">
+            <p>認証に成功しました。<br><strong><span id="foundName" style="font-size: 1.2em;"></span></strong> さん</p>
+            <p style="text-align: left; font-size: 14px;">学籍番号が未登録です。<br>以下に入力して登録を完了してください。<br>(ない場合は空欄でも可)</p>
+            <input type="text" id="inputStudentId" placeholder="学籍番号 (例: 2024001)">
+            <button id="registerBtn">登録する</button>
+        </div>
 
-    <div id="myPage" class="hidden">
-        <p>ようこそ、<span id="displayName"></span> さん</p>
-        <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px;">
-            <p>氏名: <strong id="showName"></strong></p>
-            <p>学籍番号: <span id="showStudentId"></span></p>
+        <div id="myPage" class="hidden">
+            <div class="mypage-header">
+                <img id="myIcon" src="" alt="icon" class="profile-icon">
+                <div>
+                    <span class="info-label">LINEアカウント</span>
+                    <div id="displayName" class="user-display-name"></div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <span class="info-label">氏名</span>
+                <div id="showName" class="info-value"></div>
+                <span class="info-label">ふりがな</span>
+                <div id="showKana" class="info-value"></div>
+                <span class="info-label">学籍番号</span>
+                <div id="showStudentId" class="info-value"></div>
+            </div>
         </div>
     </div>
 
@@ -169,15 +275,20 @@
         }
 
         function showMyPage(data) {
-            document.getElementById("title").innerText = "マイページ";
-            document.getElementById("nameForm").classList.add("hidden");
-            document.getElementById("idForm").classList.add("hidden");
-            document.getElementById("myPage").classList.remove("hidden");
+    document.getElementById("title").innerText = "デジタル会員証"; // タイトルも変更
+    document.getElementById("nameForm").classList.add("hidden");
+    document.getElementById("idForm").classList.add("hidden");
+    document.getElementById("myPage").classList.remove("hidden");
 
-            document.getElementById("displayName").innerText = data.lineDisplayName;
-            document.getElementById("showName").innerText = data.name;
-            document.getElementById("showStudentId").innerText = data.studentId;
-        }
+    // アイコン画像のsrcを設定
+    document.getElementById("myIcon").src = data.icon || "https://placehold.jp/64x64.png?text=No+Image";
+    
+    document.getElementById("displayName").innerText = data.lineDisplayName;
+    document.getElementById("showName").innerText = data.name;
+    // ふりがなも表示するように追加
+    document.getElementById("showKana").innerText = data.kana || "(ふりがな未設定)"; 
+    document.getElementById("showStudentId").innerText = data.studentId;
+}
 
         main();
     </script>
