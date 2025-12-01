@@ -3,24 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF x Firebase</title>
+    <title>氏名認証ログイン</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { padding: 20px; font-family: sans-serif; }
+        .hidden { display: none; }
+        input { display: block; margin: 10px 0; padding: 10px; width: 100%; box-sizing: border-box; }
+        button { padding: 10px 20px; background: #06C755; color: white; border: none; width: 100%; font-size: 16px; margin-top: 10px; }
+        .error { color: red; font-size: 0.9em; }
+    </style>
 </head>
 <body>
-    <h1>LIFFログイン中...</h1>
-    <div id="userInfo" style="display:none;">
-        <p>こんにちは、<span id="nameField"></span>さん</p>
-        <img id="iconField" src="" width="64" style="border-radius: 50%;">
-        <br><br>
-        <button id="saveBtn">会員情報を登録/更新する</button>
-        <p id="status"></p>
+    <h1 id="title">読み込み中...</h1>
+
+    <div id="nameForm" class="hidden">
+        <p>学校に登録されている「本名」を入力してください。</p>
+        <input type="text" id="inputName" placeholder="例: 山田太郎">
+        <p id="nameError" class="error"></p>
+        <button id="checkNameBtn">次へ</button>
+    </div>
+
+    <div id="idForm" class="hidden">
+        <p>認証に成功しました。<br><span id="foundName"></span> さん</p>
+        <p>学籍番号が未登録です。以下に入力して登録を完了してください。<br>(ない場合は空欄でも可)</p>
+        <input type="text" id="inputStudentId" placeholder="学籍番号 (例: 2024001)">
+        <button id="registerBtn">登録する</button>
+    </div>
+
+    <div id="myPage" class="hidden">
+        <p>ようこそ、<span id="displayName"></span> さん</p>
+        <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px;">
+            <p>氏名: <strong id="showName"></strong></p>
+            <p>学籍番号: <span id="showStudentId"></span></p>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        // where と query, getDocs を追加しています
+        import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-        // Firebase設定 (さきほどと同じです)
         const firebaseConfig = {
             apiKey: "AIzaSyAWtITnn5uMOPBgOY0Bd7Rt5IN1ry8XoJI",
             authDomain: "urakata-app.firebaseapp.com",
@@ -33,58 +55,128 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const MY_LIFF_ID = "★あなたのLIFF_ID★"; 
 
-        // ▼ここにあなたのLIFF IDを入れてください
-        const MY_LIFF_ID = "2008162165-znd24peg";
+        // 検索結果を一時保存する変数
+        let foundMasterDoc = null; 
 
-        // LIFFの初期化と処理
         async function main() {
-            try {
-                await liff.init({ liffId: MY_LIFF_ID });
+            await liff.init({ liffId: MY_LIFF_ID });
+            if (!liff.isLoggedIn()) { liff.login(); return; }
 
-                if (!liff.isLoggedIn()) {
-                    liff.login(); // ログインしていなければLINEログイン画面へ
-                    return;
-                }
+            const profile = await liff.getProfile();
+            const lineUserId = profile.userId;
 
-                // ログイン成功！プロフィールを取得
-                const profile = await liff.getProfile();
-                const userId = profile.userId;
-                const displayName = profile.displayName;
-                const pictureUrl = profile.pictureUrl;
+            // 1. ユーザー登録済みかチェック
+            const userRef = doc(db, "users", lineUserId);
+            const userSnap = await getDoc(userRef);
 
-                // 画面に表示
-                document.getElementById("userInfo").style.display = "block";
-                document.querySelector("h1").innerText = "ログイン完了";
-                document.getElementById("nameField").innerText = displayName;
-                document.getElementById("iconField").src = pictureUrl;
+            if (userSnap.exists()) {
+                showMyPage(userSnap.data());
+            } else {
+                // 未登録なら名前入力画面へ
+                document.getElementById("title").innerText = "本人確認";
+                document.getElementById("nameForm").classList.remove("hidden");
+            }
 
-                // 保存ボタンの処理
-                document.getElementById("saveBtn").addEventListener("click", async () => {
-                    const statusText = document.getElementById("status");
-                    statusText.innerText = "保存中...";
+            // ■ ステップ1: 名前で検索ボタン
+            document.getElementById("checkNameBtn").addEventListener("click", async () => {
+                const inputName = document.getElementById("inputName").value.trim();
+                const errorMsg = document.getElementById("nameError");
+                errorMsg.innerText = "";
 
-                    try {
-                        // Usersコレクションの中に、「LINEのUserID」をファイル名にして保存
-                        // setDocを使うと、既存データがあれば「上書き更新」になります
-                        await setDoc(doc(db, "users", userId), {
-                            name: displayName,
-                            icon: pictureUrl,
-                            lastLogin: serverTimestamp(), // サーバー側の日時
-                            // ここに会員ランクなどを追加していけます
-                        }, { merge: true }); // merge: true にすると、既存の他の項目（ポイントなど）を消さずに済みます
+                if (!inputName) return;
 
-                        statusText.innerText = "保存完了！データベースを確認してください。";
-                    } catch (e) {
-                        console.error(e);
-                        statusText.innerText = "エラー: " + e.message;
+                try {
+                    // students_master から名前で検索するクエリ
+                    const q = query(
+                        collection(db, "students_master"), 
+                        where("name", "==", inputName),
+                        where("isRegistered", "==", false) // まだ登録していない人のみ
+                    );
+                    
+                    const querySnapshot = await getDocs(q);
+
+                    if (querySnapshot.empty) {
+                        throw new Error("その名前は名簿に見つからないか、既に登録済みです。");
                     }
+
+                    // 同姓同名対策: 今回は「最初に見つかった1人」を採用する簡易実装
+                    // 本来は誕生日などでさらに絞り込むのが安全です
+                    foundMasterDoc = querySnapshot.docs[0];
+                    const data = foundMasterDoc.data();
+
+                    console.log("見つかったデータ:", data);
+
+                    // 画面切り替え
+                    document.getElementById("nameForm").classList.add("hidden");
+                    
+                    if (data.studentId) {
+                        // 学籍番号が既にある場合 -> そのまま登録完了へ
+                        await registerUser(userRef, profile, data, data.studentId);
+                    } else {
+                        // 学籍番号がない場合 -> 入力フォームを表示
+                        document.getElementById("title").innerText = "情報の補完";
+                        document.getElementById("foundName").innerText = data.name;
+                        document.getElementById("idForm").classList.remove("hidden");
+                    }
+
+                } catch (e) {
+                    errorMsg.innerText = e.message;
+                }
+            });
+
+            // ■ ステップ2: 学籍番号を入力して登録ボタン
+            document.getElementById("registerBtn").addEventListener("click", async () => {
+                const inputId = document.getElementById("inputStudentId").value.trim();
+                // 空欄でもOKならチェックしない、必須ならここでチェック
+
+                // 登録実行
+                await registerUser(userRef, profile, foundMasterDoc.data(), inputId);
+            });
+        }
+
+        // 共通の登録処理関数
+        async function registerUser(userRef, profile, masterData, studentId) {
+            try {
+                // 1. ユーザーデータ(users)を作成
+                await setDoc(userRef, {
+                    lineUserId: profile.userId,
+                    lineDisplayName: profile.displayName,
+                    name: masterData.name,
+                    kana: masterData.kana,
+                    studentId: studentId || "未設定", // 空なら未設定といれる
+                    createdAt: serverTimestamp()
                 });
 
-            } catch (err) {
-                console.error("LIFF Init Error", err);
-                document.querySelector("h1").innerText = "LIFF初期化エラー";
+                // 2. マスターデータ(students_master)側も更新
+                // 登録済みにする + 後から入力された学籍番号があれば更新しておく
+                const updateData = { isRegistered: true };
+                if (studentId) {
+                    updateData.studentId = studentId;
+                }
+                
+                // foundMasterDoc.ref でドキュメントへの参照が取れます
+                await setDoc(foundMasterDoc.ref, updateData, { merge: true });
+
+                alert("登録が完了しました！");
+                location.reload();
+
+            } catch (e) {
+                console.error(e);
+                alert("登録エラー: " + e.message);
             }
+        }
+
+        function showMyPage(data) {
+            document.getElementById("title").innerText = "マイページ";
+            document.getElementById("nameForm").classList.add("hidden");
+            document.getElementById("idForm").classList.add("hidden");
+            document.getElementById("myPage").classList.remove("hidden");
+
+            document.getElementById("displayName").innerText = data.lineDisplayName;
+            document.getElementById("showName").innerText = data.name;
+            document.getElementById("showStudentId").innerText = data.studentId;
         }
 
         main();
