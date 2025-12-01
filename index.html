@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIFF x Firebase</title>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+    <h1>LIFFログイン中...</h1>
+    <div id="userInfo" style="display:none;">
+        <p>こんにちは、<span id="nameField"></span>さん</p>
+        <img id="iconField" src="" width="64" style="border-radius: 50%;">
+        <br><br>
+        <button id="saveBtn">会員情報を登録/更新する</button>
+        <p id="status"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+        // Firebase設定 (さきほどと同じです)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAWtITnn5uMOPBgOY0Bd7Rt5IN1ry8XoJI",
+            authDomain: "urakata-app.firebaseapp.com",
+            projectId: "urakata-app",
+            storageBucket: "urakata-app.firebasestorage.app",
+            messagingSenderId: "407777765696",
+            appId: "1:407777765696:web:045c2d94729022b4eab2a5",
+            measurementId: "G-9ZRMD26XNJ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ▼ここにあなたのLIFF IDを入れてください
+        const MY_LIFF_ID = "★あなたのLIFF_ID★";
+
+        // LIFFの初期化と処理
+        async function main() {
+            try {
+                await liff.init({ liffId: MY_LIFF_ID });
+
+                if (!liff.isLoggedIn()) {
+                    liff.login(); // ログインしていなければLINEログイン画面へ
+                    return;
+                }
+
+                // ログイン成功！プロフィールを取得
+                const profile = await liff.getProfile();
+                const userId = profile.userId;
+                const displayName = profile.displayName;
+                const pictureUrl = profile.pictureUrl;
+
+                // 画面に表示
+                document.getElementById("userInfo").style.display = "block";
+                document.querySelector("h1").innerText = "ログイン完了";
+                document.getElementById("nameField").innerText = displayName;
+                document.getElementById("iconField").src = pictureUrl;
+
+                // 保存ボタンの処理
+                document.getElementById("saveBtn").addEventListener("click", async () => {
+                    const statusText = document.getElementById("status");
+                    statusText.innerText = "保存中...";
+
+                    try {
+                        // Usersコレクションの中に、「LINEのUserID」をファイル名にして保存
+                        // setDocを使うと、既存データがあれば「上書き更新」になります
+                        await setDoc(doc(db, "users", userId), {
+                            name: displayName,
+                            icon: pictureUrl,
+                            lastLogin: serverTimestamp(), // サーバー側の日時
+                            // ここに会員ランクなどを追加していけます
+                        }, { merge: true }); // merge: true にすると、既存の他の項目（ポイントなど）を消さずに済みます
+
+                        statusText.innerText = "保存完了！データベースを確認してください。";
+                    } catch (e) {
+                        console.error(e);
+                        statusText.innerText = "エラー: " + e.message;
+                    }
+                });
+
+            } catch (err) {
+                console.error("LIFF Init Error", err);
+                document.querySelector("h1").innerText = "LIFF初期化エラー";
+            }
+        }
+
+        main();
+    </script>
+</body>
+</html>
