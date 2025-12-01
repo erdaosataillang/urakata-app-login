@@ -12,7 +12,7 @@
             margin: 0;
             padding: 20px;
             font-family: 'Roboto', 'Noto Sans JP', sans-serif;
-            background-color: #f5f7fd; /* 背景色：薄いブルーグレー */
+            background-color: #f5f7fd;
             color: #202124;
             display: flex;
             justify-content: center;
@@ -20,11 +20,10 @@
             min-height: 100vh;
             box-sizing: border-box;
         }
-        /* カードデザイン */
         .card {
             background: #ffffff;
             padding: 40px 30px;
-            border-radius: 28px; /* 丸みを強く */
+            border-radius: 28px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
             width: 100%;
             max-width: 400px;
@@ -42,20 +41,11 @@
             line-height: 1.6;
             margin-bottom: 2rem;
         }
+        .input-group { text-align: left; margin-bottom: 20px; }
+        label { display: block; font-size: 12px; color: #5f6368; margin-bottom: 8px; font-weight: 500; }
         
-        /* 入力フォーム */
-        .input-group {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-size: 12px;
-            color: #5f6368;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        input[type="text"] {
+        /* テキスト入力と日付入力のデザイン */
+        input[type="text"], input[type="date"] {
             width: 100%;
             padding: 13px 15px;
             border: 1px solid #dadce0;
@@ -63,15 +53,15 @@
             font-size: 16px;
             box-sizing: border-box;
             transition: 0.2s;
+            font-family: inherit; /* フォントを継承 */
         }
-        input[type="text"]:focus {
+        input[type="text"]:focus, input[type="date"]:focus {
             outline: none;
             border-color: #1a73e8;
             border-width: 2px;
-            padding: 12px 14px; /* ボーダー分調整 */
+            padding: 12px 14px;
         }
 
-        /* ボタン */
         button {
             width: 100%;
             padding: 12px 0;
@@ -86,13 +76,11 @@
         }
         button:hover {
             background-color: #1765cc;
-            box-shadow: 0 1px 2px rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
         }
         
         .error { color: #d93025; font-size: 12px; margin-top: 5px; text-align: left; }
         .hidden { display: none !important; }
 
-        /* マイページ（会員証）用スタイル */
         .profile-section {
             display: flex;
             flex-direction: column;
@@ -100,17 +88,13 @@
             margin-bottom: 20px;
         }
         .profile-icon {
-            width: 80px;
-            height: 80px;
+            width: 80px; height: 80px;
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 10px;
             border: 1px solid #dadce0;
         }
-        .line-name {
-            font-size: 18px;
-            font-weight: 500;
-        }
+        .line-name { font-size: 18px; font-weight: 500; }
         .info-card {
             background-color: #f8f9fa;
             border-radius: 8px;
@@ -124,14 +108,8 @@
         .info-label { font-size: 11px; color: #5f6368; display: block; margin-bottom: 2px; }
         .info-value { font-size: 16px; color: #3c4043; font-weight: 500; }
         
-        /* ロゴっぽい装飾 */
         .logo-area { margin-bottom: 20px; }
-        .logo-dummy {
-            display: inline-block;
-            font-weight: bold;
-            font-size: 20px;
-            color: #5f6368;
-        }
+        .logo-dummy { display: inline-block; font-weight: bold; font-size: 20px; color: #5f6368; }
         .logo-g { color: #4285f4; }
     </style>
 </head>
@@ -145,7 +123,7 @@
         <h2 id="title">読み込み中...</h2>
 
         <div id="nameForm" class="hidden">
-            <p>システムへのログイン認証を行います。<br>名簿の「氏名（漢字）」を入力してください。</p>
+            <p>ログイン認証を行います。<br>名簿の「氏名（漢字）」を入力してください。</p>
             <div class="input-group">
                 <input type="text" id="inputName" placeholder="氏名を入力">
                 <div id="nameError" class="error"></div>
@@ -153,15 +131,23 @@
             <button id="checkNameBtn">次へ</button>
         </div>
 
-        <div id="idForm" class="hidden">
+        <div id="registerForm" class="hidden">
             <div class="profile-section">
                 <div class="line-name" id="foundName"></div>
             </div>
-            <p>認証に成功しました。<br>学籍番号を登録して利用を開始してください。</p>
+            <p>認証に成功しました。<br>以下の情報を登録して利用を開始してください。</p>
             
             <div class="input-group">
-                <input type="text" id="inputStudentId" placeholder="学籍番号 (例: 2024001)">
+                <label>学籍番号</label>
+                <input type="text" id="inputStudentId" placeholder="例: 2024001 (ない場合は空欄)">
             </div>
+
+            <div class="input-group">
+                <label>生年月日（本人確認用）</label>
+                <input type="date" id="inputBirthday">
+                <div id="regError" class="error"></div>
+            </div>
+
             <button id="registerBtn">登録を完了する</button>
         </div>
 
@@ -185,7 +171,7 @@
                     <span class="info-label">学籍番号</span>
                     <div id="showStudentId" class="info-value"></div>
                 </div>
-            </div>
+                </div>
         </div>
     </div>
 
@@ -205,9 +191,8 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const MY_LIFF_ID = "2008162165-znd24peg"; // あなたのID
+        const MY_LIFF_ID = "2008162165-znd24peg"; 
 
-        // 検索結果の一時保存
         let foundMasterDoc = null; 
 
         async function main() {
@@ -218,28 +203,23 @@
                 const profile = await liff.getProfile();
                 const lineUserId = profile.userId;
 
-                // 1. ユーザー登録済みかチェック
                 const userRef = doc(db, "users", lineUserId);
                 const userSnap = await getDoc(userRef);
 
                 if (userSnap.exists()) {
-                    // ■ 登録済みならマイページ表示
-                    // アイコン情報が古かったり無かったりする場合のために、毎回最新のLINEアイコンで上書き更新しておくと親切です
                     const currentData = userSnap.data();
+                    // アイコン更新
                     if (currentData.icon !== profile.pictureUrl) {
                          await setDoc(userRef, { icon: profile.pictureUrl }, { merge: true });
                          currentData.icon = profile.pictureUrl;
                     }
                     showMyPage(currentData);
                 } else {
-                    // ■ 未登録なら認証画面へ
                     document.getElementById("title").innerText = "ログイン";
                     document.getElementById("nameForm").classList.remove("hidden");
                 }
 
-                // --- イベントリスナー ---
-
-                // 名前検索ボタン
+                // --- イベント: 名前検索 ---
                 document.getElementById("checkNameBtn").addEventListener("click", async () => {
                     const inputName = document.getElementById("inputName").value.trim();
                     const errorMsg = document.getElementById("nameError");
@@ -260,21 +240,18 @@
                             throw new Error("名簿に見つからないか、既に登録済みです。");
                         }
 
-                        // ヒットした最初のデータを採用
                         foundMasterDoc = querySnapshot.docs[0];
                         const data = foundMasterDoc.data();
 
-                        // 画面切り替え
+                        // 画面切り替え：全員「登録フォーム」へ進む
                         document.getElementById("nameForm").classList.add("hidden");
-                        
+                        document.getElementById("title").innerText = "情報登録";
+                        document.getElementById("foundName").innerText = data.name;
+                        document.getElementById("registerForm").classList.remove("hidden"); // idFormから名称変更
+
+                        // 名簿に学籍番号があれば自動入力しておく
                         if (data.studentId) {
-                            // 学籍番号がある人 -> 即時登録
-                            await registerUser(userRef, profile, data, data.studentId);
-                        } else {
-                            // ない人 -> 入力フォーム表示
-                            document.getElementById("title").innerText = "情報登録";
-                            document.getElementById("foundName").innerText = data.name;
-                            document.getElementById("idForm").classList.remove("hidden");
+                            document.getElementById("inputStudentId").value = data.studentId;
                         }
 
                     } catch (e) {
@@ -282,10 +259,20 @@
                     }
                 });
 
-                // 学籍番号登録ボタン
+                // --- イベント: 登録完了 ---
                 document.getElementById("registerBtn").addEventListener("click", async () => {
                     const inputId = document.getElementById("inputStudentId").value.trim();
-                    await registerUser(userRef, profile, foundMasterDoc.data(), inputId);
+                    const inputBirthday = document.getElementById("inputBirthday").value; // 誕生日
+                    const errorMsg = document.getElementById("regError");
+                    errorMsg.innerText = "";
+
+                    // 誕生日を必須チェック
+                    if (!inputBirthday) {
+                        errorMsg.innerText = "生年月日は必須です。";
+                        return;
+                    }
+
+                    await registerUser(userRef, profile, foundMasterDoc.data(), inputId, inputBirthday);
                 });
 
             } catch(err) {
@@ -294,23 +281,21 @@
             }
         }
 
-        // 登録処理（共通）
-        async function registerUser(userRef, profile, masterData, studentId) {
+        async function registerUser(userRef, profile, masterData, studentId, birthday) {
             try {
-                // ここで icon: profile.pictureUrl を保存します
                 const newUserData = {
                     lineUserId: profile.userId,
                     lineDisplayName: profile.displayName,
-                    icon: profile.pictureUrl, // LINEのアイコンURL
+                    icon: profile.pictureUrl,
                     name: masterData.name,
                     kana: masterData.kana,
                     studentId: studentId || "未設定",
+                    birthday: birthday, // ★ここで保存
                     createdAt: serverTimestamp()
                 };
 
                 await setDoc(userRef, newUserData);
 
-                // マスターデータ側も登録済みに更新
                 const updateMaster = { isRegistered: true };
                 if (studentId) updateMaster.studentId = studentId;
                 await setDoc(foundMasterDoc.ref, updateMaster, { merge: true });
@@ -324,16 +309,13 @@
             }
         }
 
-        // マイページ表示処理
         function showMyPage(data) {
             document.getElementById("title").innerText = "会員証";
             document.getElementById("nameForm").classList.add("hidden");
-            document.getElementById("idForm").classList.add("hidden");
+            document.getElementById("registerForm").classList.add("hidden");
             document.getElementById("myPage").classList.remove("hidden");
 
-            // アイコン表示 (なければダミー)
             document.getElementById("myIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
-            
             document.getElementById("displayName").innerText = data.lineDisplayName;
             document.getElementById("showName").innerText = data.name;
             document.getElementById("showKana").innerText = data.kana || "";
