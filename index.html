@@ -40,32 +40,54 @@
             font-size: 14px; font-weight: 500; cursor: pointer;
         }
         button:hover { background-color: #1765cc; }
-        /* 補助ボタン（LMC登録用） */
         button.secondary { background-color: white; color: #1a73e8; border: 1px solid #dadce0; margin-top: 10px; }
         button.secondary:hover { background-color: #f1f3f4; }
 
         .error { color: #d93025; font-size: 12px; margin-top: 5px; text-align: left; }
         .hidden { display: none !important; }
 
-        /* プロフィール周り */
         .profile-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
         
+        /* アイコンの枠（ベース） */
         .icon-wrapper {
             width: 84px; height: 84px;
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             margin-bottom: 10px;
-            background: #dadce0;
+            background: #dadce0; /* LMC用（グレー） */
+            transition: all 0.3s ease;
         }
-        /* 裏方部専用リング */
-        .icon-wrapper.rainbow-ring {
+
+        /* ★色設定の変更箇所★ */
+        .icon-wrapper.ring-rainbow {
             background: linear-gradient(135deg, #EA4335 0%, #FBBC05 25%, #34A853 50%, #4285F4 75%, #EA4335 100%);
             animation: spin-color 4s linear infinite;
         }
+        /* 音響：青 */
+        .icon-wrapper.ring-sound {
+            background: #1a73e8; /* Google Blue */
+            box-shadow: 0 0 12px rgba(26, 115, 232, 0.4);
+        }
+        /* 照明：オレンジ */
+        .icon-wrapper.ring-light {
+            background: #FF9800; /* Vibrant Orange */
+            box-shadow: 0 0 12px rgba(255, 152, 0, 0.4);
+        }
+        /* 舞台：緑 */
+        .icon-wrapper.ring-stage {
+            background: #34A853; /* Google Green */
+            box-shadow: 0 0 12px rgba(52, 168, 83, 0.4);
+        }
+        /* 映像：赤 */
+        .icon-wrapper.ring-video {
+            background: #EA4335; /* Google Red */
+            box-shadow: 0 0 12px rgba(234, 67, 53, 0.4);
+        }
+
         .profile-icon {
-            width: 78px; height: 78px;
+            width: 76px; height: 76px;
             border-radius: 50%; object-fit: cover;
-            border: 3px solid #fff; background-color: white;
+            border: 4px solid #fff; background-color: white;
         }
         .line-name { font-size: 18px; font-weight: 500; }
         .role-badge {
@@ -100,7 +122,7 @@
         <h2 id="title">読み込み中...</h2>
 
         <div id="nameForm" class="hidden">
-            <p>裏方部の方は、名簿の氏名を入力してください。<br>（LMCの方もここから新規登録できます）</p>
+            <p>裏方部の方は名簿の氏名を、<br>LMCの方は「新規登録」を選択してください。</p>
             <div class="input-group">
                 <input type="text" id="inputSearchName" placeholder="氏名を入力">
                 <div id="nameError" class="error"></div>
@@ -113,8 +135,7 @@
             <div class="profile-section">
                 <span id="targetOrgBadge" class="role-badge" style="background:#f1f3f4; color:#5f6368; margin-bottom:10px;"></span>
             </div>
-            <p>以下の情報を登録して利用を開始してください。</p>
-            
+            <p>情報を登録して利用を開始してください。</p>
             <div class="input-group">
                 <label>氏名</label>
                 <input type="text" id="regName">
@@ -123,7 +144,6 @@
                 <label>ふりがな</label>
                 <input type="text" id="regKana">
             </div>
-
             <div class="input-group">
                 <label>学籍番号</label>
                 <input type="text" id="regStudentId" placeholder="例: 2024001 (任意)">
@@ -160,7 +180,7 @@
                     <div id="showStudentId" class="info-value"></div>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">所属</span>
+                    <span class="info-label">所属 / 担当</span>
                     <div id="showOrg" class="info-value"></div>
                 </div>
             </div>
@@ -185,9 +205,8 @@
         const db = getFirestore(app);
         const MY_LIFF_ID = "2008162165-znd24peg"; 
 
-        // 登録モード管理変数
-        let registerMode = ""; // "urakata" or "lmc"
-        let foundMasterDoc = null; // 裏方部の場合のドキュメント参照
+        let registerMode = "";
+        let foundMasterDoc = null; 
 
         async function main() {
             try {
@@ -201,7 +220,6 @@
                 const userSnap = await getDoc(userRef);
 
                 if (userSnap.exists()) {
-                    // データがあればマイページへ
                     const currentData = userSnap.data();
                     if (currentData.icon !== profile.pictureUrl) {
                          await setDoc(userRef, { icon: profile.pictureUrl }, { merge: true });
@@ -209,12 +227,10 @@
                     }
                     showMyPage(currentData);
                 } else {
-                    // なければ入力画面へ
                     document.getElementById("title").innerText = "ログイン";
                     document.getElementById("nameForm").classList.remove("hidden");
                 }
 
-                // --- ① 名簿検索ボタン (裏方部判定) ---
                 document.getElementById("checkNameBtn").addEventListener("click", async () => {
                     const inputName = document.getElementById("inputSearchName").value.trim();
                     const errorMsg = document.getElementById("nameError");
@@ -231,36 +247,30 @@
                         const querySnapshot = await getDocs(q);
 
                         if (querySnapshot.empty) {
-                            // 名簿にない -> エラー表示
                             throw new Error("名簿に見つかりません。LMCの方は「LMCとして新規登録」を押してください。");
                         }
 
-                        // ヒットした（裏方部確定）
                         foundMasterDoc = querySnapshot.docs[0];
                         const data = foundMasterDoc.data();
                         
                         registerMode = "urakata";
-                        showRegisterForm(data.name, data.kana, data.studentId, true);
+                        showRegisterForm(data.name, data.kana, data.studentId, true, data.job);
 
                     } catch (e) {
                         errorMsg.innerText = e.message;
                     }
                 });
 
-                // --- ② LMC新規登録ボタン ---
                 document.getElementById("lmcRegisterBtn").addEventListener("click", () => {
                     registerMode = "lmc";
-                    showRegisterForm("", "", "", false); // 空欄で入力可として表示
+                    showRegisterForm("", "", "", false, "");
                 });
 
-                // --- ③ 戻るボタン ---
                 document.getElementById("backBtn").addEventListener("click", () => {
                     document.getElementById("registerForm").classList.add("hidden");
                     document.getElementById("nameForm").classList.remove("hidden");
-                    document.getElementById("title").innerText = "ログイン";
                 });
 
-                // --- ④ 登録実行ボタン ---
                 document.getElementById("commitBtn").addEventListener("click", async () => {
                     const name = document.getElementById("regName").value.trim();
                     const kana = document.getElementById("regKana").value.trim();
@@ -275,6 +285,11 @@
                     }
 
                     try {
+                        let job = "";
+                        if (registerMode === "urakata" && foundMasterDoc) {
+                            job = foundMasterDoc.data().job || "";
+                        }
+
                         const newUserData = {
                             lineUserId: profile.userId,
                             lineDisplayName: profile.displayName,
@@ -284,17 +299,14 @@
                             studentId: studentId || "未設定",
                             birthday: birthday,
                             role: "", 
-                            
-                            // ★ここが分岐点
-                            org: registerMode, // "urakata" or "lmc"
+                            org: registerMode, 
+                            job: job, 
                             createdAt: serverTimestamp()
                         };
 
                         await setDoc(userRef, newUserData);
 
-                        // 裏方部の場合はマスターデータも「登録済み」にする
                         if (registerMode === "urakata" && foundMasterDoc) {
-                             // もし学籍番号が空だったのに今回入力されたら更新しておく
                             const updateMaster = { isRegistered: true };
                             if (!foundMasterDoc.data().studentId && studentId) {
                                 updateMaster.studentId = studentId;
@@ -317,34 +329,32 @@
             }
         }
 
-        // 登録フォームを表示するヘルパー関数
-        function showRegisterForm(name, kana, studentId, isReadOnly) {
+        function showRegisterForm(name, kana, studentId, isReadOnly, job) {
             document.getElementById("nameForm").classList.add("hidden");
             document.getElementById("registerForm").classList.remove("hidden");
             document.getElementById("title").innerText = "情報登録";
 
-            // バッジ表示
             const badge = document.getElementById("targetOrgBadge");
             if (registerMode === "urakata") {
-                badge.innerText = "裏方部 (名簿確認済み)";
-                badge.style.color = "#ea4335"; // 赤っぽい色
+                let jobLabel = "";
+                if (job === "sound") jobLabel = "（音響）";
+                if (job === "light") jobLabel = "（照明）";
+                if (job === "stage") jobLabel = "（舞台）";
+                if (job === "video") jobLabel = "（映像・カメラマン）";
+
+                badge.innerText = "裏方部" + jobLabel;
+                badge.style.color = "#ea4335";
             } else {
                 badge.innerText = "LMC (新規登録)";
                 badge.style.color = "#5f6368";
             }
 
-            // フォームへの値セット
             const nameInput = document.getElementById("regName");
-            const kanaInput = document.getElementById("regKana");
-            const idInput = document.getElementById("regStudentId");
-
+            document.getElementById("regKana").value = kana || "";
+            document.getElementById("regStudentId").value = studentId || "";
             nameInput.value = name || "";
-            kanaInput.value = kana || "";
-            idInput.value = studentId || "";
-
-            // 名簿にある情報は書き換えられないようにロックする
             nameInput.readOnly = isReadOnly;
-            // kanaInput.readOnly = isReadOnly; // ふりがなは修正させてもいいかも？今回はロック解除しておきます
+            const idInput = document.getElementById("regStudentId");
             if (studentId) idInput.readOnly = true; else idInput.readOnly = false;
         }
 
@@ -354,20 +364,28 @@
             document.getElementById("registerForm").classList.add("hidden");
             document.getElementById("myPage").classList.remove("hidden");
 
-            // ▼ リング判定
             const iconWrapper = document.getElementById("iconWrapper");
+            iconWrapper.className = "icon-wrapper"; 
+
             if (data.org === "urakata") {
-                iconWrapper.classList.add("rainbow-ring");
-            } else {
-                iconWrapper.classList.remove("rainbow-ring");
+                if (data.job === "sound") {
+                    iconWrapper.classList.add("ring-sound"); // 青
+                } else if (data.job === "light") {
+                    iconWrapper.classList.add("ring-light"); // オレンジ
+                } else if (data.job === "stage") {
+                    iconWrapper.classList.add("ring-stage"); // 緑
+                } else if (data.job === "video") {
+                    iconWrapper.classList.add("ring-video"); // 赤
+                } else {
+                    iconWrapper.classList.add("ring-rainbow"); // その他
+                }
             }
 
             document.getElementById("myIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
             document.getElementById("displayName").innerText = data.lineDisplayName;
 
-            // 役職
-            const roleBadge = document.getElementById("roleBadge");
             if (data.role) {
+                const roleBadge = document.getElementById("roleBadge");
                 roleBadge.innerText = data.role;
                 roleBadge.classList.remove("hidden");
             }
@@ -375,7 +393,14 @@
             document.getElementById("showName").innerText = data.name;
             document.getElementById("showKana").innerText = data.kana || "";
             document.getElementById("showStudentId").innerText = data.studentId;
-            document.getElementById("showOrg").innerText = (data.org === "urakata") ? "裏方部" : "LMC";
+            
+            let orgText = (data.org === "urakata") ? "裏方部" : "LMC";
+            if (data.job === "sound") orgText += " / 音響";
+            if (data.job === "light") orgText += " / 照明";
+            if (data.job === "stage") orgText += " / 舞台";
+            if (data.job === "video") orgText += " / 映像・カメラマン";
+            
+            document.getElementById("showOrg").innerText = orgText;
         }
 
         main();
