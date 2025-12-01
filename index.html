@@ -3,126 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>デジタル会員証</title>
+    <title>マイページ</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
         body {
-            margin: 0; padding: 20px;
+            margin: 0; padding: 0;
             font-family: 'Roboto', 'Noto Sans JP', sans-serif;
-            background-color: #f5f7fd; color: #202124;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; box-sizing: border-box;
+            background-color: #f0f2f5; /* Google系グレー */
+            color: #202124;
+            min-height: 100vh;
         }
-        .card {
-            background: #ffffff; padding: 40px 30px;
-            border-radius: 28px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            width: 100%; max-width: 400px; text-align: center;
-        }
-        h2 { font-weight: 500; margin: 0 0 1rem; font-size: 24px; }
-        p { color: #5f6368; font-size: 14px; margin-bottom: 2rem; }
-        
-        .input-group { text-align: left; margin-bottom: 20px; }
-        label { display: block; font-size: 12px; color: #5f6368; margin-bottom: 8px; font-weight: 500; }
-        input {
-            width: 100%; padding: 13px 15px;
-            border: 1px solid #dadce0; border-radius: 4px;
-            font-size: 16px; box-sizing: border-box; font-family: inherit;
-        }
-        input:focus { outline: none; border: 2px solid #1a73e8; padding: 12px 14px; }
-        input[readonly] { background-color: #f1f3f4; color: #5f6368; border-color: transparent; }
 
-        button {
-            width: 100%; padding: 12px 0; border: none; border-radius: 4px;
-            background-color: #1a73e8; color: white;
-            font-size: 14px; font-weight: 500; cursor: pointer;
+        /* 共通コンテナ */
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            padding-bottom: 40px;
         }
-        button:hover { background-color: #1765cc; }
-        button.secondary { background-color: white; color: #1a73e8; border: 1px solid #dadce0; margin-top: 10px; }
-        button.secondary:hover { background-color: #f1f3f4; }
 
-        .error { color: #d93025; font-size: 12px; margin-top: 5px; text-align: left; }
-        .hidden { display: none !important; }
+        /* ▼ ログイン前フォーム用（中央寄せ） ▼ */
+        .center-screen {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            height: 100vh; padding: 20px; box-sizing: border-box;
+            background: #fff;
+        }
 
-        .profile-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
-        
-        /* アイコンの枠 */
+        /* --- ヘッダーエリア（プロフィール要約） --- */
+        .profile-header {
+            padding: 30px 20px 20px;
+            text-align: center;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* アイコンリング */
         .icon-wrapper {
             width: 84px; height: 84px;
             border-radius: 50%;
+            margin: 0 auto 15px;
             display: flex; justify-content: center; align-items: center;
-            margin-bottom: 15px;
             background: #dadce0;
             transition: all 0.3s ease;
         }
-
-        /* ★ リングの色定義 ★ */
-        .icon-wrapper.ring-rainbow {
-            background: linear-gradient(135deg, #EA4335 0%, #FBBC05 25%, #34A853 50%, #4285F4 75%, #EA4335 100%);
-            animation: spin-color 4s linear infinite;
-        }
-        /* 音響：青 */
-        .icon-wrapper.ring-sound { background: #1a73e8; box-shadow: 0 0 15px rgba(26, 115, 232, 0.3); }
-        /* 照明：オレンジ */
-        .icon-wrapper.ring-light { background: #fa7b17; box-shadow: 0 0 15px rgba(250, 123, 23, 0.3); }
-        /* 舞台：緑 */
-        .icon-wrapper.ring-stage { background: #34A853; box-shadow: 0 0 15px rgba(52, 168, 83, 0.3); }
-        /* 映像：赤 */
-        .icon-wrapper.ring-video { background: #EA4335; box-shadow: 0 0 15px rgba(234, 67, 53, 0.3); }
-
         .profile-icon {
             width: 76px; height: 76px;
             border-radius: 50%; object-fit: cover;
             border: 4px solid #fff; background-color: white;
         }
         
-        /* 名前とバッジ */
-        .line-name { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
-        
-        /* ★ 役職バッジの共通設定 ★ */
+        /* リング色設定 */
+        .ring-rainbow { background: linear-gradient(135deg, #EA4335, #FBBC05, #34A853, #4285F4); animation: spin 4s linear infinite; }
+        .ring-sound { background: #1a73e8; box-shadow: 0 0 15px rgba(26, 115, 232, 0.3); }
+        .ring-light { background: #fa7b17; box-shadow: 0 0 15px rgba(250, 123, 23, 0.3); }
+        .ring-stage { background: #34A853; box-shadow: 0 0 15px rgba(52, 168, 83, 0.3); }
+        .ring-video { background: #EA4335; box-shadow: 0 0 15px rgba(234, 67, 53, 0.3); }
+
+        .header-name { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .header-email { font-size: 13px; color: #5f6368; margin-bottom: 10px; }
+
+        /* バッジ */
         .job-badge {
-            font-size: 12px; font-weight: bold;
+            font-size: 11px; font-weight: bold;
             padding: 4px 12px; border-radius: 20px;
             display: inline-block;
-            background-color: #f1f3f4; color: #5f6368; /* デフォルト */
+            background-color: #f1f3f4; color: #5f6368;
         }
-        /* バッジの色分け */
-        .job-badge.badge-sound { background-color: #e8f0fe; color: #1a73e8; } /* 青 */
-        .job-badge.badge-light { background-color: #fef0e0; color: #fa7b17; } /* オレンジ */
-        .job-badge.badge-stage { background-color: #e6f4ea; color: #34A853; } /* 緑 */
-        .job-badge.badge-video { background-color: #fce8e6; color: #EA4335; } /* 赤 */
-        .job-badge.badge-rainbow { 
-            background: linear-gradient(90deg, #fce8e6, #fef0e0, #e6f4ea, #e8f0fe); 
-            color: #5f6368; 
+        .badge-sound { background-color: #e8f0fe; color: #1a73e8; }
+        .badge-light { background-color: #fef0e0; color: #fa7b17; }
+        .badge-stage { background-color: #e6f4ea; color: #34A853; }
+        .badge-video { background-color: #fce8e6; color: #EA4335; }
+        .badge-rainbow { background: linear-gradient(90deg, #fce8e6, #fef0e0, #e6f4ea, #e8f0fe); color: #5f6368; }
+
+        /* --- タブナビゲーション --- */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #dadce0;
+            background: #fff;
+            position: sticky; top: 0; /* スクロールしても上に張り付く */
+            z-index: 10;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #5f6368;
+            cursor: pointer;
+            position: relative;
+        }
+        .tab-btn.active {
+            color: #1a73e8;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            height: 3px;
+            background: #1a73e8;
+            border-radius: 3px 3px 0 0;
         }
 
-        .info-card {
-            background-color: #f8f9fa; border-radius: 8px;
-            padding: 20px; text-align: left; margin-top: 10px;
-            border: 1px solid #dadce0;
+        /* --- コンテンツリスト --- */
+        .content-area { padding: 10px 0; }
+        .section-title {
+            padding: 20px 20px 10px;
+            font-size: 13px; font-weight: 500; color: #5f6368;
+            text-transform: uppercase;
         }
-        .info-row { margin-bottom: 15px; }
-        .info-row:last-child { margin-bottom: 0; }
-        .info-label { font-size: 11px; color: #5f6368; display: block; margin-bottom: 2px; }
-        .info-value { font-size: 16px; color: #3c4043; font-weight: 500; }
+        .list-item {
+            padding: 16px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        .list-item:last-child { border-bottom: none; }
+        .list-label { font-size: 14px; color: #5f6368; }
+        .list-value { font-size: 15px; color: #202124; font-weight: 500; text-align: right; }
         
-        .logo-area { margin-bottom: 20px; }
-        .logo-dummy { display: inline-block; font-weight: bold; font-size: 20px; color: #5f6368; }
-        .logo-g { color: #4285f4; }
+        .security-alert {
+            margin: 20px;
+            padding: 15px;
+            background: #e8f0fe;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #1a73e8;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* フォーム部品（ログイン用） */
+        .input-group { width: 100%; margin-bottom: 20px; text-align: left; }
+        label { display: block; font-size: 12px; color: #5f6368; margin-bottom: 8px; }
+        input {
+            width: 100%; padding: 13px 15px;
+            border: 1px solid #dadce0; border-radius: 4px;
+            font-size: 16px; box-sizing: border-box;
+        }
+        button {
+            width: 100%; padding: 12px; border: none; border-radius: 4px;
+            background-color: #1a73e8; color: white; font-weight: 500; cursor: pointer;
+        }
+        button.secondary { background: white; color: #1a73e8; border: 1px solid #dadce0; margin-top: 10px; }
+        
+        .error { color: #d93025; font-size: 12px; margin-top: 5px; }
+        .hidden { display: none !important; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="logo-area">
-            <span class="logo-dummy"><span class="logo-g">G</span>Member</span>
-        </div>
-
-        <h2 id="title">読み込み中...</h2>
-
-        <div id="nameForm" class="hidden">
+    <div id="authContainer" class="center-screen hidden">
+        <h2 style="margin-bottom: 20px;">G-Member Login</h2>
+        
+        <div id="nameForm" class="hidden" style="width:100%; max-width:320px;">
             <p>裏方部の方は名簿の氏名を、<br>LMCの方は「新規登録」を選択してください。</p>
             <div class="input-group">
                 <input type="text" id="inputSearchName" placeholder="氏名を入力">
@@ -132,11 +168,10 @@
             <button id="lmcRegisterBtn" class="secondary">LMCとして新規登録</button>
         </div>
 
-        <div id="registerForm" class="hidden">
-            <div class="profile-section">
+        <div id="registerForm" class="hidden" style="width:100%; max-width:320px;">
+            <div style="text-align:center; margin-bottom:15px;">
                 <span id="targetOrgBadge" class="job-badge"></span>
             </div>
-            <p>情報を登録して利用を開始してください。</p>
             <div class="input-group">
                 <label>氏名</label>
                 <input type="text" id="regName">
@@ -147,48 +182,89 @@
             </div>
             <div class="input-group">
                 <label>学籍番号</label>
-                <input type="text" id="regStudentId" placeholder="例: 2024001 (任意)">
+                <input type="text" id="regStudentId" placeholder="例: 2024001">
             </div>
             <div class="input-group">
-                <label>生年月日（必須）</label>
+                <label>生年月日</label>
                 <input type="date" id="regBirthday">
                 <div id="regError" class="error"></div>
             </div>
-            <button id="commitBtn">登録を完了する</button>
-            <button id="backBtn" class="secondary" style="margin-top:20px;">戻る</button>
+            <button id="commitBtn">登録完了</button>
+            <button id="backBtn" class="secondary">戻る</button>
+        </div>
+    </div>
+
+
+    <div id="dashboardContainer" class="container hidden">
+        
+        <div class="profile-header">
+            <div id="iconWrapper" class="icon-wrapper">
+                <img id="myIcon" src="" class="profile-icon">
+            </div>
+            <div id="displayName" class="header-name"></div>
+            <div id="jobBadge" class="job-badge hidden"></div>
         </div>
 
-        <div id="myPage" class="hidden">
-            <div class="profile-section">
-                <div id="iconWrapper" class="icon-wrapper">
-                    <img id="myIcon" src="" alt="icon" class="profile-icon">
-                </div>
-                
-                <div id="displayName" class="line-name"></div>
-                
-                <div id="jobBadge" class="job-badge hidden"></div>
-                <div id="roleText" style="font-size:11px; color:#5f6368; margin-top:4px;"></div>
+        <div class="tabs">
+            <div class="tab-btn active" onclick="switchTab('home')">ホーム</div>
+            <div class="tab-btn" onclick="switchTab('security')">セキュリティ</div>
+        </div>
+
+        <div id="tab-home" class="content-area">
+            <div class="section-title">基本情報</div>
+            <div class="list-item">
+                <span class="list-label">氏名</span>
+                <span id="showName" class="list-value"></span>
             </div>
-            
-            <div class="info-card">
-                <div class="info-row">
-                    <span class="info-label">氏名</span>
-                    <div id="showName" class="info-value"></div>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">ふりがな</span>
-                    <div id="showKana" class="info-value"></div>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">学籍番号</span>
-                    <div id="showStudentId" class="info-value"></div>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">所属</span>
-                    <div id="showOrg" class="info-value"></div>
-                </div>
+            <div class="list-item">
+                <span class="list-label">ふりがな</span>
+                <span id="showKana" class="list-value"></span>
+            </div>
+            <div class="list-item">
+                <span class="list-label">学籍番号</span>
+                <span id="showStudentId" class="list-value"></span>
+            </div>
+            <div class="list-item">
+                <span class="list-label">所属</span>
+                <span id="showOrg" class="list-value"></span>
+            </div>
+             <div class="list-item">
+                <span class="list-label">担当</span>
+                <span id="showJob" class="list-value"></span>
+            </div>
+            <div id="roleRow" class="list-item hidden">
+                <span class="list-label">役職</span>
+                <span id="showRole" class="list-value" style="color:#1a73e8; font-weight:bold;"></span>
             </div>
         </div>
+
+        <div id="tab-security" class="content-area hidden">
+            <div class="security-alert">
+                <span>🛡️</span>
+                <span>アカウントは保護されています</span>
+            </div>
+
+            <div class="section-title">ログインとセキュリティ</div>
+            <div class="list-item">
+                <span class="list-label">最終ログイン</span>
+                <span id="lastLoginDate" class="list-value">...</span>
+            </div>
+            <div class="list-item">
+                <span class="list-label">認証プロバイダ</span>
+                <span class="list-value">LINE Login</span>
+            </div>
+            
+            <div class="section-title">システム情報</div>
+            <div class="list-item">
+                <span class="list-label">ユーザーID</span>
+                <span id="showUserId" class="list-value" style="font-size:10px; color:#999;"></span>
+            </div>
+            <div class="list-item">
+                <span class="list-label">バージョン</span>
+                <span class="list-value">v1.2.0</span>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
@@ -212,6 +288,18 @@
         let registerMode = "";
         let foundMasterDoc = null; 
 
+        // グローバル関数としてタブ切り替えを定義
+        window.switchTab = (tabName) => {
+            // ボタンのアクティブ化
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // コンテンツの表示切り替え
+            document.getElementById('tab-home').classList.add('hidden');
+            document.getElementById('tab-security').classList.add('hidden');
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+        };
+
         async function main() {
             try {
                 await liff.init({ liffId: MY_LIFF_ID });
@@ -224,46 +312,42 @@
                 const userSnap = await getDoc(userRef);
 
                 if (userSnap.exists()) {
+                    // データあり -> マイページ表示
                     const currentData = userSnap.data();
-                    if (currentData.icon !== profile.pictureUrl) {
-                         await setDoc(userRef, { icon: profile.pictureUrl }, { merge: true });
-                         currentData.icon = profile.pictureUrl;
-                    }
-                    showMyPage(currentData);
+                    
+                    // ログイン日時更新
+                    await setDoc(userRef, { 
+                        lastLogin: serverTimestamp(),
+                        icon: profile.pictureUrl 
+                    }, { merge: true });
+
+                    currentData.icon = profile.pictureUrl;
+                    // TimestampオブジェクトをDateに変換して渡す
+                    renderDashboard(currentData, userSnap.id);
+
                 } else {
-                    document.getElementById("title").innerText = "ログイン";
+                    // データなし -> ログインフォーム表示
+                    document.getElementById("authContainer").classList.remove("hidden");
                     document.getElementById("nameForm").classList.remove("hidden");
                 }
 
-                // 名前検索
+                // --- イベントリスナー設定 ---
                 document.getElementById("checkNameBtn").addEventListener("click", async () => {
                     const inputName = document.getElementById("inputSearchName").value.trim();
-                    const errorMsg = document.getElementById("nameError");
-                    errorMsg.innerText = "";
                     if (!inputName) return;
-
                     try {
                         const q = query(
                             collection(db, "students_master"), 
                             where("name", "==", inputName),
                             where("isRegistered", "==", false)
                         );
-                        
-                        const querySnapshot = await getDocs(q);
+                        const qs = await getDocs(q);
+                        if (qs.empty) throw new Error("名簿に見つかりません。LMCで登録してください。");
 
-                        if (querySnapshot.empty) {
-                            throw new Error("名簿に見つかりません。LMCの方は「LMCとして新規登録」を押してください。");
-                        }
-
-                        foundMasterDoc = querySnapshot.docs[0];
-                        const data = foundMasterDoc.data();
-                        
+                        foundMasterDoc = qs.docs[0];
                         registerMode = "urakata";
-                        showRegisterForm(data.name, data.kana, data.studentId, true, data.job);
-
-                    } catch (e) {
-                        errorMsg.innerText = e.message;
-                    }
+                        showRegisterForm(foundMasterDoc.data().name, foundMasterDoc.data().kana, foundMasterDoc.data().studentId, true, foundMasterDoc.data().job);
+                    } catch (e) { document.getElementById("nameError").innerText = e.message; }
                 });
 
                 document.getElementById("lmcRegisterBtn").addEventListener("click", () => {
@@ -279,119 +363,76 @@
                 document.getElementById("commitBtn").addEventListener("click", async () => {
                     const name = document.getElementById("regName").value.trim();
                     const kana = document.getElementById("regKana").value.trim();
-                    const studentId = document.getElementById("regStudentId").value.trim();
-                    const birthday = document.getElementById("regBirthday").value;
-                    const errorMsg = document.getElementById("regError");
-                    errorMsg.innerText = "";
+                    const sId = document.getElementById("regStudentId").value.trim();
+                    const bday = document.getElementById("regBirthday").value;
+                    if (!name || !bday) { document.getElementById("regError").innerText = "必須項目が不足しています"; return; }
 
-                    if (!name || !birthday) {
-                        errorMsg.innerText = "氏名と生年月日は必須です。";
-                        return;
+                    let job = "";
+                    if (registerMode === "urakata" && foundMasterDoc) job = foundMasterDoc.data().job || "";
+
+                    await setDoc(userRef, {
+                        lineUserId: profile.userId,
+                        lineDisplayName: profile.displayName,
+                        icon: profile.pictureUrl,
+                        name: name, kana: kana, studentId: sId || "未設定", birthday: bday,
+                        role: "", org: registerMode, job: job,
+                        createdAt: serverTimestamp(),
+                        lastLogin: serverTimestamp()
+                    });
+
+                    if (registerMode === "urakata" && foundMasterDoc) {
+                        await setDoc(foundMasterDoc.ref, { isRegistered: true, studentId: sId || foundMasterDoc.data().studentId }, { merge: true });
                     }
-
-                    try {
-                        let job = "";
-                        if (registerMode === "urakata" && foundMasterDoc) {
-                            job = foundMasterDoc.data().job || "";
-                        }
-
-                        const newUserData = {
-                            lineUserId: profile.userId,
-                            lineDisplayName: profile.displayName,
-                            icon: profile.pictureUrl,
-                            name: name,
-                            kana: kana,
-                            studentId: studentId || "未設定",
-                            birthday: birthday,
-                            role: "", 
-                            org: registerMode, 
-                            job: job, 
-                            createdAt: serverTimestamp()
-                        };
-
-                        await setDoc(userRef, newUserData);
-
-                        if (registerMode === "urakata" && foundMasterDoc) {
-                            const updateMaster = { isRegistered: true };
-                            if (!foundMasterDoc.data().studentId && studentId) {
-                                updateMaster.studentId = studentId;
-                            }
-                            await setDoc(foundMasterDoc.ref, updateMaster, { merge: true });
-                        }
-
-                        alert("登録完了！");
-                        location.reload();
-
-                    } catch (e) {
-                        console.error(e);
-                        alert("エラー: " + e.message);
-                    }
+                    location.reload();
                 });
 
-            } catch(err) {
-                console.error(err);
-                document.getElementById("title").innerText = "エラー発生";
-            }
+            } catch(err) { console.error(err); }
         }
 
         // 登録フォーム表示
-        function showRegisterForm(name, kana, studentId, isReadOnly, job) {
+        function showRegisterForm(name, kana, sId, isReadOnly, job) {
             document.getElementById("nameForm").classList.add("hidden");
             document.getElementById("registerForm").classList.remove("hidden");
-            document.getElementById("title").innerText = "情報登録";
-
+            
             const badge = document.getElementById("targetOrgBadge");
             if (registerMode === "urakata") {
-                // jobに応じたバッジ表示
-                let jobText = getJobLabel(job);
-                let badgeClass = getJobBadgeClass(job);
-                
-                badge.className = "job-badge " + badgeClass;
-                badge.innerText = "裏方部 " + jobText;
+                badge.className = "job-badge " + getJobBadgeClass(job);
+                badge.innerText = "裏方部 " + getJobLabel(job);
             } else {
                 badge.className = "job-badge";
-                badge.innerText = "LMC (新規登録)";
+                badge.innerText = "LMC (新規)";
             }
 
-            const nameInput = document.getElementById("regName");
+            document.getElementById("regName").value = name || "";
+            document.getElementById("regName").readOnly = isReadOnly;
             document.getElementById("regKana").value = kana || "";
-            document.getElementById("regStudentId").value = studentId || "";
-            nameInput.value = name || "";
-            nameInput.readOnly = isReadOnly;
-            const idInput = document.getElementById("regStudentId");
-            if (studentId) idInput.readOnly = true; else idInput.readOnly = false;
+            document.getElementById("regStudentId").value = sId || "";
+            if(sId) document.getElementById("regStudentId").readOnly = true;
         }
 
-        // マイページ表示
-        function showMyPage(data) {
-            document.getElementById("title").innerText = "会員証";
-            document.getElementById("nameForm").classList.add("hidden");
-            document.getElementById("registerForm").classList.add("hidden");
-            document.getElementById("myPage").classList.remove("hidden");
+        // ダッシュボード描画
+        function renderDashboard(data, docId) {
+            document.getElementById("authContainer").classList.add("hidden");
+            document.getElementById("dashboardContainer").classList.remove("hidden");
 
-            // アイコンリングの設定
+            // ヘッダー情報
             const iconWrapper = document.getElementById("iconWrapper");
             iconWrapper.className = "icon-wrapper"; // リセット
-
             if (data.org === "urakata") {
-                if (data.job === "sound") iconWrapper.classList.add("ring-sound");
-                else if (data.job === "light") iconWrapper.classList.add("ring-light");
-                else if (data.job === "stage") iconWrapper.classList.add("ring-stage");
-                else if (data.job === "video") iconWrapper.classList.add("ring-video");
-                else iconWrapper.classList.add("ring-rainbow");
+                 let ringClass = "ring-rainbow";
+                 if(data.job === "sound") ringClass = "ring-sound";
+                 if(data.job === "light") ringClass = "ring-light";
+                 if(data.job === "stage") ringClass = "ring-stage";
+                 if(data.job === "video") ringClass = "ring-video";
+                 iconWrapper.classList.add(ringClass);
             }
-
             document.getElementById("myIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
             document.getElementById("displayName").innerText = data.lineDisplayName;
 
-            // 担当バッジの表示
             const jobBadge = document.getElementById("jobBadge");
-            if (data.org === "urakata") {
-                let jobText = getJobLabel(data.job);
-                let badgeClass = getJobBadgeClass(data.job);
-                
-                jobBadge.className = "job-badge " + badgeClass;
-                jobBadge.innerText = jobText;
+            if(data.org === "urakata") {
+                jobBadge.className = "job-badge " + getJobBadgeClass(data.job);
+                jobBadge.innerText = getJobLabel(data.job);
                 jobBadge.classList.remove("hidden");
             } else {
                 jobBadge.className = "job-badge";
@@ -399,18 +440,30 @@
                 jobBadge.classList.remove("hidden");
             }
 
-            // 役職テキスト(部長など)
-            if (data.role) {
-                document.getElementById("roleText").innerText = data.role;
+            // ホームタブ情報
+            document.getElementById("showName").innerText = data.name;
+            document.getElementById("showKana").innerText = data.kana || "-";
+            document.getElementById("showStudentId").innerText = data.studentId || "-";
+            document.getElementById("showOrg").innerText = (data.org === "urakata") ? "裏方部" : "LMC";
+            document.getElementById("showJob").innerText = getJobLabel(data.job);
+            
+            if(data.role) {
+                document.getElementById("roleRow").classList.remove("hidden");
+                document.getElementById("showRole").innerText = data.role;
             }
 
-            document.getElementById("showName").innerText = data.name;
-            document.getElementById("showKana").innerText = data.kana || "";
-            document.getElementById("showStudentId").innerText = data.studentId;
-            document.getElementById("showOrg").innerText = (data.org === "urakata") ? "裏方部" : "LMC";
+            // セキュリティタブ情報
+            if (data.lastLogin) {
+                // Firebase Timestamp -> Date変換
+                const date = data.lastLogin.toDate();
+                const dateStr = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
+                document.getElementById("lastLoginDate").innerText = dateStr;
+            } else {
+                document.getElementById("lastLoginDate").innerText = "今回が初回";
+            }
+            document.getElementById("showUserId").innerText = docId;
         }
 
-        // 担当ラベル変換
         function getJobLabel(job) {
             if (job === "sound") return "音響";
             if (job === "light") return "照明";
@@ -418,8 +471,6 @@
             if (job === "video") return "映像・カメラマン";
             return "部員";
         }
-
-        // 担当バッジクラス変換
         function getJobBadgeClass(job) {
             if (job === "sound") return "badge-sound";
             if (job === "light") return "badge-light";
