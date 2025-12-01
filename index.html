@@ -92,10 +92,13 @@
         }
         .menu-icon-wrapper .material-icons { font-size: 24px; }
 
+        /* アイコン色設定 */
         .icon-basic { background-color: #c4eed0; color: #0f5223; }
         .icon-security { background-color: #c2e7ff; color: #001d35; }
         .icon-apps { background-color: #f3e5f5; color: #7b1fa2; }
         .icon-card { background-color: #ffdbc1; color: #bf360c; }
+        /* ★追加: 管理者用ピンク */
+        .icon-admin { background-color: #fce4ec; color: #c2185b; }
 
         .menu-content { flex-grow: 1; }
         .menu-title { font-size: 16px; font-weight: 500; color: #1f1f1f; display: block; margin-bottom: 4px; }
@@ -155,61 +158,47 @@
             font-size:14px; display:flex; gap:12px; align-items:center;
         }
 
-        /* --- 会員証カード アニメーション付き --- */
+        /* 会員証カード アニメーション */
         .member-card {
             background: #ffffff; padding: 40px 30px;
             border-radius: 28px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             text-align: center; margin-top: 20px;
-            position: relative; overflow: hidden; /* アニメーションはみ出し防止 */
+            position: relative; overflow: hidden;
         }
         
-        /* カードが開いたときのアニメーション定義 */
         .page-container.open .anim-header {
             display: flex; align-items: center; justify-content: flex-start;
-            position: relative;
-            padding-left: 0; /* 初期位置 */
-            margin-bottom: 30px;
-            height: 100px; /* アイコン高さ確保 */
+            position: relative; padding-left: 0; margin-bottom: 30px; height: 100px;
         }
 
-        /* アイコン: 中央から左へ */
         .page-container.open .anim-icon {
             width: 90px; height: 90px;
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            background: #dadce0;
-            flex-shrink: 0;
-            
-            /* アニメーション */
+            background: #dadce0; flex-shrink: 0;
             animation: slideIconLeft 1.2s cubic-bezier(0.2, 0, 0, 1) forwards;
         }
         
-        /* テキスト: 遅れて右から出現 */
         .page-container.open .anim-text {
-            text-align: left;
-            margin-left: 20px;
-            opacity: 0; /* 最初は隠す */
-            animation: fadeInText 1.2s cubic-bezier(0.2, 0, 0, 1) 0.3s forwards; /* 0.3秒遅延 */
+            text-align: left; margin-left: 20px; opacity: 0;
+            animation: fadeInText 1.2s cubic-bezier(0.2, 0, 0, 1) 0.3s forwards;
         }
 
         @keyframes slideIconLeft {
-            0% { transform: translateX(110%); } /* 右寄り（ほぼ中央）から開始 */
-            20% { transform: translateX(110%); } /* ちょっと溜める */
-            100% { transform: translateX(0); } /* 定位置へ */
+            0% { transform: translateX(110%); }
+            20% { transform: translateX(110%); }
+            100% { transform: translateX(0); }
         }
-
         @keyframes fadeInText {
             0% { opacity: 0; transform: translateX(20px); }
             100% { opacity: 1; transform: translateX(0); }
         }
 
-        /* 会員証内のアイコン画像 */
         .anim-icon .profile-icon { width: 82px; height: 82px; border-width: 4px; }
 
-        /* QRコードエリア */
         .qr-section { margin-top: 30px; text-align: center; }
-        .qr-image { width: 160px; height: 160px; mix-blend-mode: multiply; } /* 白背景となじませる */
+        .qr-image { width: 160px; height: 160px; mix-blend-mode: multiply; }
         
         /* ログイン画面 */
         .center-screen {
@@ -343,6 +332,17 @@
                 </div>
                 <span class="material-icons menu-arrow">chevron_right</span>
             </button>
+
+            <button id="btn-admin" class="menu-btn hidden" onclick="openPage('admin')">
+                <div class="menu-icon-wrapper icon-admin">
+                    <span class="material-icons">admin_panel_settings</span>
+                </div>
+                <div class="menu-content">
+                    <span class="menu-title">データの管理</span>
+                    <span class="menu-subtitle">他ユーザーデータの編集、閲覧</span>
+                </div>
+                <span class="material-icons menu-arrow">chevron_right</span>
+            </button>
         </div>
     </div>
 
@@ -422,7 +422,6 @@
                 <div style="font-weight:bold; font-size:20px; color:#5f6368; margin-bottom:20px;">
                     <span style="color:#4285f4;">G</span>Member
                 </div>
-                
                 <div class="anim-header">
                     <div id="cardIconWrapper" class="anim-icon">
                         <img id="cardIcon" src="" class="profile-icon">
@@ -430,13 +429,29 @@
                     <div class="anim-text">
                         <div id="cardName" style="font-size:20px; font-weight:bold; color:#1f1f1f;"></div>
                         <div id="cardRoleBadge" class="job-badge hidden" style="margin-top:4px;"></div>
-                        <div style="font-size:12px; color:#5f6368; margin-top:2px;">裏方部サービス会員</div>
+                        <div id="cardTagline" style="font-size:12px; color:#5f6368; margin-top:2px;"></div>
                     </div>
                 </div>
-                
                 <div class="qr-section">
                     <img id="cardQr" src="" alt="QR Code" class="qr-image">
                     <div style="font-size:10px; color:#999; margin-top:8px;">IDENTITY VERIFICATION</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-admin" class="page-container">
+        <div class="page-header">
+            <button class="back-btn" onclick="closePage('admin')"><span class="material-icons">arrow_back</span></button>
+            <div class="page-title">データの管理</div>
+        </div>
+        <div class="content-area">
+            <div class="info-card">
+                <div class="list-row">
+                    <div class="list-text-container">
+                        <div class="list-label">管理者メニュー</div>
+                        <div class="list-value">ここから他のユーザーのデータを検索・編集できます。(開発中)</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -565,7 +580,13 @@
             document.getElementById("displayName").innerText = data.lineDisplayName;
             document.getElementById("roleText").innerText = data.role || "";
 
-            // 詳細ページ情報
+            // ★ 管理者ボタンの表示制御
+            if(data.org === "urakata" && data.role) {
+                document.getElementById("btn-admin").classList.remove("hidden");
+            } else {
+                document.getElementById("btn-admin").classList.add("hidden");
+            }
+
             document.getElementById("showName").innerText = data.name;
             document.getElementById("showKana").innerText = data.kana || "-";
             document.getElementById("showStudentId").innerText = data.studentId || "-";
@@ -587,10 +608,9 @@
             }
             document.getElementById("showUserId").innerText = docId;
 
-            // 会員証 (アニメーション対応)
             const cardIconWrapper = document.getElementById("cardIconWrapper");
-            cardIconWrapper.className = "anim-icon"; // アニメーション用クラス
-            if(ringClass) cardIconWrapper.classList.add(ringClass); // 色クラスも追加
+            cardIconWrapper.className = "anim-icon"; 
+            if(ringClass) cardIconWrapper.classList.add(ringClass);
             
             document.getElementById("cardIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
             document.getElementById("cardName").innerText = data.name;
@@ -601,7 +621,8 @@
                 cardRoleBadge.classList.remove("hidden");
             } else { cardRoleBadge.classList.add("hidden"); }
 
-            // QRコード生成 (API使用)
+            document.getElementById("cardTagline").innerText = (data.org === "urakata") ? "裏方部部員" : "LMC";
+
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${docId}`;
             document.getElementById("cardQr").src = qrUrl;
         }
