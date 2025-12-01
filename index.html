@@ -60,6 +60,8 @@
             padding: 0 16px 40px;
             display: flex; flex-direction: column; gap: 12px;
         }
+
+        /* 独立したボタン（島） */
         .menu-btn {
             display: flex; align-items: center; justify-content: space-between;
             padding: 16px;
@@ -70,6 +72,30 @@
             transition: transform 0.1s, box-shadow 0.1s;
         }
         .menu-btn:active { transform: scale(0.98); background-color: #f8f9fa; }
+
+        /* ★新しいクラス：グループ化された島（複数のボタンを含む） */
+        .menu-group {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            overflow: hidden; /* 角丸からはみ出さないように */
+            display: flex; flex-direction: column;
+        }
+
+        /* グループ内のアイテム（ボタン） */
+        .menu-group-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px;
+            background: #ffffff; border: none; width: 100%;
+            text-align: left; cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .menu-group-item:active { background-color: #f8f9fa; }
+        
+        /* グループ内の仕切り線 */
+        .menu-group-item.with-border {
+            border-bottom: 1px solid #e0e3e7;
+        }
         
         .menu-icon-wrapper {
             width: 48px; height: 48px;
@@ -79,10 +105,10 @@
         }
         .menu-icon-wrapper .material-icons { font-size: 24px; }
 
-        /* アイコン背景色設定 */
+        /* アイコン色設定 */
         .icon-basic { background-color: #c4eed0; color: #0f5223; } /* 緑 */
         .icon-security { background-color: #c2e7ff; color: #001d35; } /* 青 */
-        .icon-apps { background-color: #f3e5f5; color: #7b1fa2; } /* ★追加: 紫 */
+        .icon-apps { background-color: #f3e5f5; color: #7b1fa2; } /* 紫 */
         .icon-card { background-color: #ffdbc1; color: #bf360c; } /* オレンジ */
 
         .menu-content { flex-grow: 1; }
@@ -120,7 +146,6 @@
         .section-header { font-size: 20px; color: #1f1f1f; margin-bottom: 8px; margin-top: 30px; padding-left: 4px; }
         .section-subtext { font-size: 14px; color: #444746; margin-bottom: 16px; padding-left: 4px; }
 
-        /* カードとリスト */
         .info-card {
             background: white; border-radius: 20px; padding: 0;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 16px; overflow: hidden;
@@ -245,16 +270,28 @@
                 <span class="material-icons menu-arrow">chevron_right</span>
             </button>
             
-            <button class="menu-btn" onclick="openPage('security')">
-                <div class="menu-icon-wrapper icon-security">
-                    <span class="material-icons">security</span>
-                </div>
-                <div class="menu-content">
-                    <span class="menu-title">セキュリティとログイン</span>
-                    <span class="menu-subtitle">ログイン方法、最近のセキュリティイベント</span>
-                </div>
-                <span class="material-icons menu-arrow">chevron_right</span>
-            </button>
+            <div class="menu-group">
+                <button class="menu-group-item with-border" onclick="openPage('security')">
+                    <div class="menu-icon-wrapper icon-security">
+                        <span class="material-icons">security</span>
+                    </div>
+                    <div class="menu-content">
+                        <span class="menu-title">セキュリティとログイン</span>
+                        <span class="menu-subtitle">ログイン方法、最近のセキュリティイベント</span>
+                    </div>
+                    <span class="material-icons menu-arrow">chevron_right</span>
+                </button>
+                
+                <button class="menu-group-item" onclick="openPage('dataPrivacy')">
+                    <div class="menu-icon-wrapper icon-security"> <span class="material-icons">privacy_tip</span>
+                    </div>
+                    <div class="menu-content">
+                        <span class="menu-title">データとプライバシー</span>
+                        <span class="menu-subtitle">データの削除、アカウントの停止</span>
+                    </div>
+                    <span class="material-icons menu-arrow">chevron_right</span>
+                </button>
+            </div>
             
             <button class="menu-btn" onclick="openPage('apps')">
                 <div class="menu-icon-wrapper icon-apps">
@@ -386,11 +423,29 @@
                         <div id="showUserId" class="list-value" style="font-size:12px; color:#999;"></div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-dataPrivacy" class="page-container">
+        <div class="page-header">
+            <button class="back-btn" onclick="closePage('dataPrivacy')">
+                <span class="material-icons">arrow_back</span>
+            </button>
+            <div class="page-title">データとプライバシー</div>
+        </div>
+        <div class="content-area">
+            <div class="info-card">
                 <div class="list-row">
-                    <span class="material-icons row-icon">privacy_tip</span>
                     <div class="list-text-container">
-                        <div class="list-label">データとプライバシー</div>
-                        <div class="list-value">データの削除、アカウントの停止</div>
+                        <div class="list-label">データの削除</div>
+                        <div class="list-value">現在利用可能なオプションはありません</div>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <div class="list-text-container">
+                        <div class="list-label">アカウントの停止</div>
+                        <div class="list-value">管理者に問い合わせてください</div>
                     </div>
                 </div>
             </div>
