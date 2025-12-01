@@ -60,8 +60,6 @@
             padding: 0 16px 40px;
             display: flex; flex-direction: column; gap: 12px;
         }
-
-        /* 独立したボタン（島） */
         .menu-btn {
             display: flex; align-items: center; justify-content: space-between;
             padding: 16px;
@@ -72,30 +70,19 @@
             transition: transform 0.1s, box-shadow 0.1s;
         }
         .menu-btn:active { transform: scale(0.98); background-color: #f8f9fa; }
-
-        /* ★新しいクラス：グループ化された島（複数のボタンを含む） */
+        
         .menu-group {
-            background: #ffffff;
-            border-radius: 24px;
+            background: #ffffff; border-radius: 24px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            overflow: hidden; /* 角丸からはみ出さないように */
-            display: flex; flex-direction: column;
+            overflow: hidden; display: flex; flex-direction: column;
         }
-
-        /* グループ内のアイテム（ボタン） */
         .menu-group-item {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 16px;
-            background: #ffffff; border: none; width: 100%;
-            text-align: left; cursor: pointer;
-            transition: background-color 0.1s;
+            padding: 16px; background: #ffffff; border: none; width: 100%;
+            text-align: left; cursor: pointer; transition: background-color 0.1s;
         }
         .menu-group-item:active { background-color: #f8f9fa; }
-        
-        /* グループ内の仕切り線 */
-        .menu-group-item.with-border {
-            border-bottom: 1px solid #e0e3e7;
-        }
+        .menu-group-item.with-border { border-bottom: 1px solid #e0e3e7; }
         
         .menu-icon-wrapper {
             width: 48px; height: 48px;
@@ -105,11 +92,10 @@
         }
         .menu-icon-wrapper .material-icons { font-size: 24px; }
 
-        /* アイコン色設定 */
-        .icon-basic { background-color: #c4eed0; color: #0f5223; } /* 緑 */
-        .icon-security { background-color: #c2e7ff; color: #001d35; } /* 青 */
-        .icon-apps { background-color: #f3e5f5; color: #7b1fa2; } /* 紫 */
-        .icon-card { background-color: #ffdbc1; color: #bf360c; } /* オレンジ */
+        .icon-basic { background-color: #c4eed0; color: #0f5223; }
+        .icon-security { background-color: #c2e7ff; color: #001d35; }
+        .icon-apps { background-color: #f3e5f5; color: #7b1fa2; }
+        .icon-card { background-color: #ffdbc1; color: #bf360c; }
 
         .menu-content { flex-grow: 1; }
         .menu-title { font-size: 16px; font-weight: 500; color: #1f1f1f; display: block; margin-bottom: 4px; }
@@ -152,10 +138,8 @@
         }
         
         .list-row {
-            display: flex; align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid #e0e3e7;
-            background: white;
+            display: flex; align-items: center; padding: 16px 20px;
+            border-bottom: 1px solid #e0e3e7; background: white;
         }
         .list-row:last-child { border-bottom: none; }
         .list-row:active { background-color: #f8f9fa; }
@@ -171,14 +155,61 @@
             font-size:14px; display:flex; gap:12px; align-items:center;
         }
 
+        /* --- 会員証カード アニメーション付き --- */
         .member-card {
             background: #ffffff; padding: 40px 30px;
             border-radius: 28px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             text-align: center; margin-top: 20px;
+            position: relative; overflow: hidden; /* アニメーションはみ出し防止 */
         }
-        .member-card .icon-wrapper { margin: 0 auto 20px; width: 100px; height: 100px; }
-        .member-card .profile-icon { width: 92px; height: 92px; border-width: 4px; }
+        
+        /* カードが開いたときのアニメーション定義 */
+        .page-container.open .anim-header {
+            display: flex; align-items: center; justify-content: flex-start;
+            position: relative;
+            padding-left: 0; /* 初期位置 */
+            margin-bottom: 30px;
+            height: 100px; /* アイコン高さ確保 */
+        }
+
+        /* アイコン: 中央から左へ */
+        .page-container.open .anim-icon {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            background: #dadce0;
+            flex-shrink: 0;
+            
+            /* アニメーション */
+            animation: slideIconLeft 1.2s cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+        
+        /* テキスト: 遅れて右から出現 */
+        .page-container.open .anim-text {
+            text-align: left;
+            margin-left: 20px;
+            opacity: 0; /* 最初は隠す */
+            animation: fadeInText 1.2s cubic-bezier(0.2, 0, 0, 1) 0.3s forwards; /* 0.3秒遅延 */
+        }
+
+        @keyframes slideIconLeft {
+            0% { transform: translateX(110%); } /* 右寄り（ほぼ中央）から開始 */
+            20% { transform: translateX(110%); } /* ちょっと溜める */
+            100% { transform: translateX(0); } /* 定位置へ */
+        }
+
+        @keyframes fadeInText {
+            0% { opacity: 0; transform: translateX(20px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* 会員証内のアイコン画像 */
+        .anim-icon .profile-icon { width: 82px; height: 82px; border-width: 4px; }
+
+        /* QRコードエリア */
+        .qr-section { margin-top: 30px; text-align: center; }
+        .qr-image { width: 160px; height: 160px; mix-blend-mode: multiply; } /* 白背景となじませる */
         
         /* ログイン画面 */
         .center-screen {
@@ -243,7 +274,6 @@
     </div>
 
     <div id="dashboardContainer" class="container hidden">
-        
         <div class="profile-header">
             <div id="iconWrapper" class="icon-wrapper">
                 <img id="myIcon" src="" class="profile-icon">
@@ -258,7 +288,6 @@
         </div>
 
         <div class="menu-list">
-            
             <button class="menu-btn" onclick="openPage('basicInfo')">
                 <div class="menu-icon-wrapper icon-basic">
                     <span class="material-icons">person_outline</span>
@@ -281,9 +310,9 @@
                     </div>
                     <span class="material-icons menu-arrow">chevron_right</span>
                 </button>
-                
                 <button class="menu-group-item" onclick="openPage('dataPrivacy')">
-                    <div class="menu-icon-wrapper icon-security"> <span class="material-icons">privacy_tip</span>
+                    <div class="menu-icon-wrapper icon-security">
+                        <span class="material-icons">privacy_tip</span>
                     </div>
                     <div class="menu-content">
                         <span class="menu-title">データとプライバシー</span>
@@ -319,163 +348,73 @@
 
     <div id="page-basicInfo" class="page-container">
         <div class="page-header">
-            <button class="back-btn" onclick="closePage('basicInfo')">
-                <span class="material-icons">arrow_back</span>
-            </button>
+            <button class="back-btn" onclick="closePage('basicInfo')"><span class="material-icons">arrow_back</span></button>
             <div class="page-title">基本情報</div>
         </div>
         <div class="content-area">
             <div class="page-description">
                 <div class="page-hero-title">裏方部サービスの<br>プロフィール情報</div>
-                <div class="page-hero-text">
-                    個人情報と個人情報を管理するためのオプションです。あなたと簡単に連絡を取ることができるよう、連絡先の詳細など、この情報の一部を他のユーザーに公開することができます。また、プロフィールの概要を確認することもできます。
-                </div>
+                <div class="page-hero-text">個人情報と個人情報を管理するためのオプションです。あなたと簡単に連絡を取ることができるよう、連絡先の詳細など、この情報の一部を他のユーザーに公開することができます。また、プロフィールの概要を確認することもできます。</div>
             </div>
-
             <div class="section-header">基本情報</div>
             <div class="section-subtext">一部の情報は裏方部サービスを利用する他のユーザーに公開されます。</div>
-
+            
             <div class="info-card">
-                <div class="list-row">
-                    <span class="material-icons row-icon">badge</span>
-                    <div class="list-text-container">
-                        <div class="list-label">氏名</div>
-                        <div id="showName" class="list-value"></div>
-                    </div>
-                </div>
-                <div class="list-row">
-                    <span class="material-icons row-icon">text_format</span>
-                    <div class="list-text-container">
-                        <div class="list-label">ふりがな</div>
-                        <div id="showKana" class="list-value"></div>
-                    </div>
-                </div>
-                <div class="list-row">
-                    <span class="material-icons row-icon">school</span>
-                    <div class="list-text-container">
-                        <div class="list-label">学籍番号</div>
-                        <div id="showStudentId" class="list-value"></div>
-                    </div>
-                </div>
-                <div class="list-row">
-                    <span class="material-icons row-icon">diversity_3</span>
-                    <div class="list-text-container">
-                        <div class="list-label">所属サークル</div>
-                        <div id="showOrg" class="list-value"></div>
-                    </div>
-                </div>
+                <div class="list-row"><span class="material-icons row-icon">badge</span><div class="list-text-container"><div class="list-label">氏名</div><div id="showName" class="list-value"></div></div></div>
+                <div class="list-row"><span class="material-icons row-icon">text_format</span><div class="list-text-container"><div class="list-label">ふりがな</div><div id="showKana" class="list-value"></div></div></div>
+                <div class="list-row"><span class="material-icons row-icon">school</span><div class="list-text-container"><div class="list-label">学籍番号</div><div id="showStudentId" class="list-value"></div></div></div>
+                <div class="list-row"><span class="material-icons row-icon">diversity_3</span><div class="list-text-container"><div class="list-label">所属サークル</div><div id="showOrg" class="list-value"></div></div></div>
             </div>
-
             <div class="info-card">
-                <div class="list-row">
-                    <span class="material-icons row-icon">work_outline</span>
-                    <div class="list-text-container">
-                        <div class="list-label">担当区分</div>
-                        <div id="showJob" class="list-value"></div>
-                    </div>
-                </div>
-                <div id="roleRowPage" class="list-row hidden">
-                    <span class="material-icons row-icon">star_outline</span>
-                    <div class="list-text-container">
-                        <div class="list-label">役職</div>
-                        <div id="showRoleInPage" class="list-value"></div>
-                    </div>
-                </div>
+                <div class="list-row"><span class="material-icons row-icon">work_outline</span><div class="list-text-container"><div class="list-label">担当区分</div><div id="showJob" class="list-value"></div></div></div>
+                <div id="roleRowPage" class="list-row hidden"><span class="material-icons row-icon">star_outline</span><div class="list-text-container"><div class="list-label">役職</div><div id="showRoleInPage" class="list-value"></div></div></div>
             </div>
         </div>
     </div>
 
     <div id="page-security" class="page-container">
         <div class="page-header">
-            <button class="back-btn" onclick="closePage('security')">
-                <span class="material-icons">arrow_back</span>
-            </button>
+            <button class="back-btn" onclick="closePage('security')"><span class="material-icons">arrow_back</span></button>
             <div class="page-title">セキュリティとログイン</div>
         </div>
         <div class="content-area">
-            <div class="security-alert">
-                <span class="material-icons">verified_user</span>
-                <div>
-                    <div style="font-weight:bold; margin-bottom:2px;">アカウントは保護されています</div>
-                    <div style="font-size:12px; opacity:0.8;">推奨される操作はありません</div>
-                </div>
-            </div>
-
+            <div class="security-alert"><span class="material-icons">verified_user</span><div><div style="font-weight:bold; margin-bottom:2px;">アカウントは保護されています</div><div style="font-size:12px; opacity:0.8;">推奨される操作はありません</div></div></div>
             <div class="info-card">
-                <div class="list-row">
-                    <span class="material-icons row-icon">history</span>
-                    <div class="list-text-container">
-                        <div class="list-label">最終ログイン日時</div>
-                        <div id="lastLoginDate" class="list-value">...</div>
-                    </div>
-                </div>
-                <div class="list-row">
-                    <span class="material-icons row-icon">login</span>
-                    <div class="list-text-container">
-                        <div class="list-label">ログイン方法</div>
-                        <div class="list-value">LINE Login (認証済み)</div>
-                    </div>
-                </div>
-                <div class="list-row">
-                    <span class="material-icons row-icon">fingerprint</span>
-                    <div class="list-text-container">
-                        <div class="list-label">ユーザーID</div>
-                        <div id="showUserId" class="list-value" style="font-size:12px; color:#999;"></div>
-                    </div>
-                </div>
+                <div class="list-row"><span class="material-icons row-icon">history</span><div class="list-text-container"><div class="list-label">最終ログイン日時</div><div id="lastLoginDate" class="list-value">...</div></div></div>
+                <div class="list-row"><span class="material-icons row-icon">login</span><div class="list-text-container"><div class="list-label">ログイン方法</div><div class="list-value">LINE Login (認証済み)</div></div></div>
+                <div class="list-row"><span class="material-icons row-icon">fingerprint</span><div class="list-text-container"><div class="list-label">ユーザーID</div><div id="showUserId" class="list-value" style="font-size:12px; color:#999;"></div></div></div>
             </div>
         </div>
     </div>
 
     <div id="page-dataPrivacy" class="page-container">
         <div class="page-header">
-            <button class="back-btn" onclick="closePage('dataPrivacy')">
-                <span class="material-icons">arrow_back</span>
-            </button>
+            <button class="back-btn" onclick="closePage('dataPrivacy')"><span class="material-icons">arrow_back</span></button>
             <div class="page-title">データとプライバシー</div>
         </div>
         <div class="content-area">
             <div class="info-card">
-                <div class="list-row">
-                    <div class="list-text-container">
-                        <div class="list-label">データの削除</div>
-                        <div class="list-value">現在利用可能なオプションはありません</div>
-                    </div>
-                </div>
-                <div class="list-row">
-                    <div class="list-text-container">
-                        <div class="list-label">アカウントの停止</div>
-                        <div class="list-value">管理者に問い合わせてください</div>
-                    </div>
-                </div>
+                <div class="list-row"><div class="list-text-container"><div class="list-label">データの削除</div><div class="list-value">現在利用可能なオプションはありません</div></div></div>
+                <div class="list-row"><div class="list-text-container"><div class="list-label">アカウントの停止</div><div class="list-value">管理者に問い合わせてください</div></div></div>
             </div>
         </div>
     </div>
 
     <div id="page-apps" class="page-container">
         <div class="page-header">
-            <button class="back-btn" onclick="closePage('apps')">
-                <span class="material-icons">arrow_back</span>
-            </button>
+            <button class="back-btn" onclick="closePage('apps')"><span class="material-icons">arrow_back</span></button>
             <div class="page-title">アプリと連携</div>
         </div>
         <div class="content-area">
             <div class="info-card">
-                <div class="list-row">
-                    <div class="list-text-container">
-                        <div class="list-label">現在連携中のアプリはありません</div>
-                        <div class="list-value" style="margin-top:4px;">サードパーティ製のアプリやサービスと連携するとここに表示されます。</div>
-                    </div>
-                </div>
+                <div class="list-row"><div class="list-text-container"><div class="list-label">現在連携中のアプリはありません</div><div class="list-value" style="margin-top:4px;">サードパーティ製のアプリやサービスと連携するとここに表示されます。</div></div></div>
             </div>
         </div>
     </div>
 
     <div id="page-memberCard" class="page-container">
         <div class="page-header">
-            <button class="back-btn" onclick="closePage('memberCard')">
-                <span class="material-icons">arrow_back</span>
-            </button>
+            <button class="back-btn" onclick="closePage('memberCard')"><span class="material-icons">arrow_back</span></button>
             <div class="page-title">会員証</div>
         </div>
         <div class="content-area">
@@ -483,17 +422,21 @@
                 <div style="font-weight:bold; font-size:20px; color:#5f6368; margin-bottom:20px;">
                     <span style="color:#4285f4;">G</span>Member
                 </div>
-                <div id="cardIconWrapper" class="icon-wrapper">
-                    <img id="cardIcon" src="" class="profile-icon">
-                </div>
-                <div id="cardName" style="font-size:22px; font-weight:bold; margin-bottom:8px;"></div>
-                <div id="cardRoleBadge" class="job-badge hidden" style="margin-bottom:20px;"></div>
                 
-                <div style="text-align:left; background:#f8f9fa; padding:20px; border-radius:12px; border:1px solid #dadce0;">
-                     <div style="font-size:12px; color:#5f6368;">学籍番号</div>
-                     <div id="cardStudentId" style="font-size:16px; font-weight:500; margin-bottom:10px;"></div>
-                     <div style="font-size:12px; color:#5f6368;">所属</div>
-                     <div id="cardOrg" style="font-size:16px; font-weight:500;"></div>
+                <div class="anim-header">
+                    <div id="cardIconWrapper" class="anim-icon">
+                        <img id="cardIcon" src="" class="profile-icon">
+                    </div>
+                    <div class="anim-text">
+                        <div id="cardName" style="font-size:20px; font-weight:bold; color:#1f1f1f;"></div>
+                        <div id="cardRoleBadge" class="job-badge hidden" style="margin-top:4px;"></div>
+                        <div style="font-size:12px; color:#5f6368; margin-top:2px;">裏方部サービス会員</div>
+                    </div>
+                </div>
+                
+                <div class="qr-section">
+                    <img id="cardQr" src="" alt="QR Code" class="qr-image">
+                    <div style="font-size:10px; color:#999; margin-top:8px;">IDENTITY VERIFICATION</div>
                 </div>
             </div>
         </div>
@@ -622,7 +565,7 @@
             document.getElementById("displayName").innerText = data.lineDisplayName;
             document.getElementById("roleText").innerText = data.role || "";
 
-            // --- 基本情報ページ ---
+            // 詳細ページ情報
             document.getElementById("showName").innerText = data.name;
             document.getElementById("showKana").innerText = data.kana || "-";
             document.getElementById("showStudentId").innerText = data.studentId || "-";
@@ -637,7 +580,6 @@
                 roleRowPage.classList.add("hidden");
             }
 
-            // --- セキュリティページ ---
             if (data.lastLogin) {
                 const date = data.lastLogin.toDate();
                 const dateStr = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`;
@@ -645,19 +587,23 @@
             }
             document.getElementById("showUserId").innerText = docId;
 
-            // --- 会員証ページ ---
+            // 会員証 (アニメーション対応)
             const cardIconWrapper = document.getElementById("cardIconWrapper");
-            cardIconWrapper.className = "icon-wrapper";
-            if(ringClass) cardIconWrapper.classList.add(ringClass);
+            cardIconWrapper.className = "anim-icon"; // アニメーション用クラス
+            if(ringClass) cardIconWrapper.classList.add(ringClass); // 色クラスも追加
+            
             document.getElementById("cardIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
             document.getElementById("cardName").innerText = data.name;
-            document.getElementById("cardStudentId").innerText = data.studentId || "未設定";
-            document.getElementById("cardOrg").innerText = (data.org === "urakata") ? "裏方部" : "LMC";
+            
             const cardRoleBadge = document.getElementById("cardRoleBadge");
             if(data.role) {
                 cardRoleBadge.innerText = data.role;
                 cardRoleBadge.classList.remove("hidden");
             } else { cardRoleBadge.classList.add("hidden"); }
+
+            // QRコード生成 (API使用)
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${docId}`;
+            document.getElementById("cardQr").src = qrUrl;
         }
 
         function getJobLabel(job) {
