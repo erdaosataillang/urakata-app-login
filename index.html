@@ -15,7 +15,6 @@
             background-color: rgb(241, 244, 249);
             color: #1f1f1f;
             min-height: 100vh;
-            /* スクロールバウンス対策 */
             overscroll-behavior-y: none;
         }
 
@@ -23,10 +22,10 @@
             max-width: 480px; margin: 0 auto;
             min-height: 100vh; position: relative;
             background-color: rgb(241, 244, 249);
-            padding-bottom: 40px; /* 下部余白 */
+            padding-bottom: 40px;
         }
 
-        /* --- ヘッダーエリア --- */
+        /* --- ヘッダー --- */
         .profile-header {
             padding: 24px 20px;
             background: rgb(241, 244, 249);
@@ -58,7 +57,7 @@
         .header-san { font-size: 14px; color: #444746; }
         .header-role { font-size: 14px; color: #444746; font-weight: 500; }
 
-        /* --- メニューリスト --- */
+        /* --- メニュー --- */
         .menu-list {
             padding: 0 16px 40px;
             display: flex; flex-direction: column; gap: 12px;
@@ -106,18 +105,14 @@
         .menu-subtitle { font-size: 12px; color: #444746; display: block; line-height: 1.4; }
         .menu-arrow { color: #c4c7c5; font-size: 24px; }
 
-        /* --- 詳細ページ (スクロール修正済み) --- */
+        /* --- 詳細ページ --- */
         .page-container {
             position: fixed; top: 0; left: 0; right: 0; 
-            height: 100vh; /* フォールバック */
-            height: 100dvh; /* スマホ用動的高さ */
+            height: 100vh; height: 100dvh;
             background: rgb(241, 244, 249); z-index: 100;
             transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
-            overflow-y: auto; /* スクロール許可 */
-            -webkit-overflow-scrolling: touch; /* iOS慣性スクロール */
-            overscroll-behavior: contain; /* 親へのスクロール連鎖防止 */
-            max-width: 480px; margin: 0 auto;
-            padding-bottom: 80px; /* 下部切れ防止 */
+            overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+            max-width: 480px; margin: 0 auto; padding-bottom: 80px;
         }
         .page-container.open { transform: translateX(0); }
 
@@ -135,7 +130,6 @@
         .page-title { font-size: 20px; font-weight: 400; color: #1f1f1f; }
 
         .content-area { padding: 0 16px; }
-        
         .page-description { text-align: left; margin-bottom: 24px; padding: 0 4px; }
         .page-hero-title { font-size: 22px; color: #1f1f1f; margin-bottom: 12px; line-height: 1.3; }
         .page-hero-text { font-size: 14px; color: #444746; line-height: 1.6; }
@@ -165,14 +159,13 @@
             font-size:14px; display:flex; gap:12px; align-items:center;
         }
 
-        /* 管理者機能 */
+        /* 管理者 */
         .search-bar {
             padding: 12px 16px; background:white; border-radius:30px; 
             display:flex; align-items:center; margin-bottom:20px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         .search-bar input { border:none; width:100%; outline:none; font-size:16px; margin-left:10px; padding:0; }
-        
         .user-list-item {
             background: white; padding: 16px; border-radius: 16px;
             display: flex; align-items: center; margin-bottom: 10px;
@@ -194,7 +187,7 @@
         .checkbox-label { display: flex; align-items: center; font-size: 16px; cursor: pointer; }
         .checkbox-label input { width: 20px; height: 20px; margin-right: 8px; }
 
-        /* 会員証アニメ */
+        /* 会員証 */
         .member-card {
             background: #ffffff; padding: 40px 30px;
             border-radius: 28px;
@@ -229,8 +222,8 @@
         }
         .input-group { width: 100%; margin-bottom: 20px; text-align: left; }
         label { display: block; font-size: 12px; color: #5f6368; margin-bottom: 8px; }
-        input {
-            width: 100%; padding: 13px 15px; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; box-sizing: border-box;
+        input, select {
+            width: 100%; padding: 13px 15px; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; box-sizing: border-box; background:white;
         }
         button {
             width: 100%; padding: 12px; border: none; border-radius: 4px;
@@ -260,6 +253,19 @@
             <div class="input-group"><label>氏名</label><input type="text" id="regName"></div>
             <div class="input-group"><label>ふりがな</label><input type="text" id="regKana"></div>
             <div class="input-group"><label>学籍番号</label><input type="text" id="regStudentId" placeholder="例: 2024001"></div>
+            
+            <div class="input-group">
+                <label>担当パート (LMC用)</label>
+                <select id="regPart">
+                    <option value="">なし</option>
+                    <option value="vocal">ボーカル</option>
+                    <option value="guitar">ギター</option>
+                    <option value="bass">ベース</option>
+                    <option value="drums">ドラム</option>
+                    <option value="keyboard">キーボード</option>
+                </select>
+            </div>
+
             <div class="input-group"><label>生年月日</label><input type="date" id="regBirthday"><div id="regError" class="error"></div></div>
             <button id="commitBtn">登録完了</button>
             <button id="backBtn" class="secondary">戻る</button>
@@ -327,7 +333,9 @@
                 <div class="list-row"><span class="material-icons row-icon">diversity_3</span><div class="list-text-container"><div class="list-label">所属サークル</div><div id="showOrg" class="list-value"></div></div></div>
             </div>
             <div class="info-card">
-                <div class="list-row"><span class="material-icons row-icon">work_outline</span><div class="list-text-container"><div class="list-label">担当区分</div><div id="showJob" class="list-value"></div></div></div>
+                <div class="list-row"><span class="material-icons row-icon">work_outline</span><div class="list-text-container"><div class="list-label">担当区分 (裏方)</div><div id="showJob" class="list-value"></div></div></div>
+                <div class="list-row"><span class="material-icons row-icon">music_note</span><div class="list-text-container"><div class="list-label">担当パート (LMC)</div><div id="showPart" class="list-value"></div></div></div>
+                
                 <div id="roleRowPage" class="list-row hidden"><span class="material-icons row-icon">star_outline</span><div class="list-text-container"><div class="list-label">役職</div><div id="showRoleInPage" class="list-value"></div></div></div>
             </div>
         </div>
@@ -405,7 +413,20 @@
                     </div>
                 </div>
 
-                <div class="edit-form-group"><label class="edit-label">担当区分 (job)</label><select id="edit-job" class="edit-select"><option value="">なし</option><option value="sound">音響</option><option value="light">照明</option><option value="stage">舞台</option><option value="video">映像・カメラマン</option></select></div>
+                <div class="edit-form-group"><label class="edit-label">担当区分 (job: 裏方)</label><select id="edit-job" class="edit-select"><option value="">なし</option><option value="sound">音響</option><option value="light">照明</option><option value="stage">舞台</option><option value="video">映像・カメラマン</option></select></div>
+                
+                <div class="edit-form-group">
+                    <label class="edit-label">担当パート (part: LMC)</label>
+                    <select id="edit-part" class="edit-select">
+                        <option value="">なし</option>
+                        <option value="vocal">ボーカル</option>
+                        <option value="guitar">ギター</option>
+                        <option value="bass">ベース</option>
+                        <option value="drums">ドラム</option>
+                        <option value="keyboard">キーボード</option>
+                    </select>
+                </div>
+
                 <div class="edit-form-group"><label class="edit-label">役職 (role)</label><input type="text" id="edit-role" class="edit-input" placeholder="例: 部長, チーフ"></div>
                 <button id="btn-save-user" class="admin-save" style="width:100%; color:white; border:none; padding:15px; border-radius:8px; font-weight:bold;">変更を保存</button>
             </div>
@@ -491,6 +512,7 @@
             document.getElementById('edit-studentId').value = user.studentId || "";
             document.getElementById('edit-role').value = user.role || "";
             document.getElementById('edit-job').value = user.job || "";
+            document.getElementById('edit-part').value = user.part || ""; // ★追加
             const affs = user.affiliations || [];
             document.getElementById('check-urakata').checked = affs.includes('urakata');
             document.getElementById('check-lmc').checked = affs.includes('lmc');
@@ -511,6 +533,7 @@
                     studentId: document.getElementById('edit-studentId').value,
                     affiliations: newAffiliations,
                     job: document.getElementById('edit-job').value,
+                    part: document.getElementById('edit-part').value, // ★追加
                     role: document.getElementById('edit-role').value
                 };
                 await updateDoc(doc(db, "users", editingUserId), newData);
@@ -569,6 +592,7 @@
                     const kana = document.getElementById("regKana").value.trim();
                     const sId = document.getElementById("regStudentId").value.trim();
                     const bday = document.getElementById("regBirthday").value;
+                    const part = document.getElementById("regPart").value; // ★追加
                     if (!name || !bday) { document.getElementById("regError").innerText = "必須項目不足"; return; }
                     
                     let job = "";
@@ -581,7 +605,7 @@
                     await setDoc(userRef, {
                         lineUserId: profile.userId, lineDisplayName: profile.displayName, icon: profile.pictureUrl,
                         name: name, kana: kana, studentId: sId || "未設定", birthday: bday,
-                        role: "", affiliations: initialAffiliations, job: job,
+                        role: "", affiliations: initialAffiliations, job: job, part: part, // ★保存
                         createdAt: serverTimestamp(), lastLogin: serverTimestamp()
                     });
                     if (registerMode === "urakata" && foundMasterDoc) {
@@ -643,6 +667,9 @@
 
             document.getElementById("showJob").innerText = getJobLabel(data.job);
             
+            // ★追加: パート表示
+            document.getElementById("showPart").innerText = getPartLabel(data.part);
+
             const roleRowPage = document.getElementById("roleRowPage");
             if (data.role) {
                 document.getElementById("showRoleInPage").innerText = data.role;
@@ -678,6 +705,15 @@
             if (job === "stage") return "舞台";
             if (job === "video") return "映像・カメラマン";
             return "部員";
+        }
+        
+        function getPartLabel(part) {
+            if (part === "vocal") return "ボーカル";
+            if (part === "guitar") return "ギター";
+            if (part === "bass") return "ベース";
+            if (part === "drums") return "ドラム";
+            if (part === "keyboard") return "キーボード";
+            return "なし";
         }
         main();
     </script>
