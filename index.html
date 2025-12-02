@@ -16,7 +16,6 @@
             color: #1f1f1f;
             min-height: 100vh;
             overscroll-behavior-y: none;
-            overflow-x: hidden; /* 風船のはみ出し防止 */
         }
 
         .container {
@@ -53,7 +52,7 @@
         .ring-stage { background: #34A853; box-shadow: 0 0 10px rgba(52, 168, 83, 0.3); }
         .ring-video { background: #EA4335; box-shadow: 0 0 10px rgba(234, 67, 53, 0.3); }
 
-        /* ★ お誕生日リング（ケーキアイコンは削除し、発光のみ） ★ */
+        /* ★ お誕生日リング（発光エフェクトのみ残す） ★ */
         .ring-birthday {
             background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
             background-size: 400%;
@@ -65,21 +64,6 @@
             0% { background-position: 0 0; }
             50% { background-position: 400% 0; }
             100% { background-position: 0 0; }
-        }
-
-        /* ★ 風船アニメーション用 ★ */
-        .balloon {
-            position: fixed;
-            bottom: -50px;
-            font-size: 2rem;
-            opacity: 0.9;
-            z-index: 9999;
-            pointer-events: none; /* クリックを邪魔しない */
-            animation: floatUp linear forwards;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
         }
 
         .header-text { flex-grow: 1; }
@@ -218,7 +202,7 @@
         .checkbox-label { display: flex; align-items: center; font-size: 16px; cursor: pointer; }
         .checkbox-label input { width: 20px; height: 20px; margin-right: 8px; }
 
-        /* 会員証 */
+        /* 会員証アニメ */
         .member-card {
             background: #ffffff; padding: 40px 30px;
             border-radius: 28px;
@@ -655,15 +639,12 @@
             const isUrakata = affs.includes("urakata");
             const isLmc = affs.includes("lmc");
 
-            // ★ 誕生日判定＆風船エフェクト
             let isBirthday = false;
             if (data.birthday) {
                 const today = new Date();
                 const bday = new Date(data.birthday);
                 if (today.getMonth() === bday.getMonth() && today.getDate() === bday.getDate()) {
                     isBirthday = true;
-                    // 風船アニメーション発動
-                    startBalloonAnimation();
                 }
             }
 
@@ -695,10 +676,8 @@
             if(isLmc) orgText += "LMC";
             document.getElementById("showOrg").innerText = orgText;
 
-            // 誕生日表示
             document.getElementById("showBirthday").innerText = data.birthday || "未設定";
 
-            // 出し分け
             const rowJob = document.getElementById("row-job");
             if (isUrakata) {
                 document.getElementById("showJob").innerText = getJobLabel(data.job);
@@ -740,41 +719,6 @@
             document.getElementById("cardTagline").innerText = isUrakata ? "裏方部部員" : "LMC";
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${docId}`;
             document.getElementById("cardQr").src = qrUrl;
-        }
-
-        // ★ 風船アニメーション生成関数
-        function startBalloonAnimation() {
-            const container = document.createElement('div');
-            container.style.position = 'fixed';
-            container.style.top = '0';
-            container.style.left = '0';
-            container.style.width = '100%';
-            container.style.height = '100%';
-            container.style.pointerEvents = 'none';
-            container.style.zIndex = '9999';
-            container.style.overflow = 'hidden';
-            document.body.appendChild(container);
-
-            const balloonCount = 30; // 風船の数
-            
-            for (let i = 0; i < balloonCount; i++) {
-                setTimeout(() => {
-                    const b = document.createElement('div');
-                    b.innerHTML = '🎈'; // 風船の絵文字
-                    b.className = 'balloon';
-                    b.style.left = Math.random() * 100 + 'vw';
-                    b.style.fontSize = (Math.random() * 30 + 30) + 'px'; // サイズランダム
-                    // アニメーション速度をランダムに (4s〜8s)
-                    b.style.animationDuration = (Math.random() * 4 + 4) + 's';
-                    container.appendChild(b);
-                    
-                    // 終わったら要素を消す
-                    setTimeout(() => b.remove(), 8000);
-                }, i * 400); // 0.4秒ごとに生成
-            }
-            
-            // コンテナ自体も後で消す
-            setTimeout(() => container.remove(), (balloonCount * 400) + 8000);
         }
 
         function getJobLabel(job) {
