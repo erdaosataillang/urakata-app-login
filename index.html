@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>マイページ</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15,15 +15,18 @@
             background-color: rgb(241, 244, 249);
             color: #1f1f1f;
             min-height: 100vh;
+            /* スクロールバウンス対策 */
+            overscroll-behavior-y: none;
         }
 
         .container {
             max-width: 480px; margin: 0 auto;
             min-height: 100vh; position: relative;
             background-color: rgb(241, 244, 249);
+            padding-bottom: 40px; /* 下部余白 */
         }
 
-        /* --- ヘッダー --- */
+        /* --- ヘッダーエリア --- */
         .profile-header {
             padding: 24px 20px;
             background: rgb(241, 244, 249);
@@ -55,7 +58,7 @@
         .header-san { font-size: 14px; color: #444746; }
         .header-role { font-size: 14px; color: #444746; font-weight: 500; }
 
-        /* --- メニュー --- */
+        /* --- メニューリスト --- */
         .menu-list {
             padding: 0 16px 40px;
             display: flex; flex-direction: column; gap: 12px;
@@ -103,12 +106,18 @@
         .menu-subtitle { font-size: 12px; color: #444746; display: block; line-height: 1.4; }
         .menu-arrow { color: #c4c7c5; font-size: 24px; }
 
-        /* --- ページ遷移 --- */
+        /* --- 詳細ページ (スクロール修正済み) --- */
         .page-container {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            position: fixed; top: 0; left: 0; right: 0; 
+            height: 100vh; /* フォールバック */
+            height: 100dvh; /* スマホ用動的高さ */
             background: rgb(241, 244, 249); z-index: 100;
             transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
-            overflow-y: auto; max-width: 480px; margin: 0 auto;
+            overflow-y: auto; /* スクロール許可 */
+            -webkit-overflow-scrolling: touch; /* iOS慣性スクロール */
+            overscroll-behavior: contain; /* 親へのスクロール連鎖防止 */
+            max-width: 480px; margin: 0 auto;
+            padding-bottom: 80px; /* 下部切れ防止 */
         }
         .page-container.open { transform: translateX(0); }
 
@@ -125,7 +134,7 @@
         .back-btn:active { background-color: rgba(0,0,0,0.05); }
         .page-title { font-size: 20px; font-weight: 400; color: #1f1f1f; }
 
-        .content-area { padding: 0 16px 40px; }
+        .content-area { padding: 0 16px; }
         
         .page-description { text-align: left; margin-bottom: 24px; padding: 0 4px; }
         .page-hero-title { font-size: 22px; color: #1f1f1f; margin-bottom: 12px; line-height: 1.3; }
@@ -175,19 +184,14 @@
         .user-name { font-size: 16px; font-weight: bold; color: #1f1f1f; }
         .user-sub { font-size: 12px; color: #5f6368; }
         
-        /* 編集フォーム（チェックボックス） */
         .edit-form-group { margin-bottom: 20px; }
         .edit-label { font-size: 12px; color: #5f6368; margin-bottom: 6px; display: block; }
         .edit-input, .edit-select {
             width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px;
             font-size: 16px; box-sizing: border-box; background: white;
         }
-        .checkbox-group {
-            display: flex; gap: 15px; flex-wrap: wrap; padding: 8px 0;
-        }
-        .checkbox-label {
-            display: flex; align-items: center; font-size: 16px; cursor: pointer;
-        }
+        .checkbox-group { display: flex; gap: 15px; flex-wrap: wrap; padding: 8px 0; }
+        .checkbox-label { display: flex; align-items: center; font-size: 16px; cursor: pointer; }
         .checkbox-label input { width: 20px; height: 20px; margin-right: 8px; }
 
         /* 会員証アニメ */
@@ -310,7 +314,10 @@
     <div id="page-basicInfo" class="page-container">
         <div class="page-header"><button class="back-btn" onclick="closePage('basicInfo')"><span class="material-icons">arrow_back</span></button><div class="page-title">基本情報</div></div>
         <div class="content-area">
-            <div class="page-description"><div class="page-hero-title">裏方部サービスの<br>プロフィール情報</div><div class="page-hero-text">個人情報と個人情報を管理するためのオプションです...</div></div>
+            <div class="page-description">
+                <div class="page-hero-title">裏方部サービスの<br>プロフィール情報</div>
+                <div class="page-hero-text">個人情報と個人情報を管理するためのオプションです。あなたと簡単に連絡を取ることができるよう、連絡先の詳細など、この情報の一部を他のユーザーに公開することができます。また、プロフィールの概要を確認することもできます。</div>
+            </div>
             <div class="section-header">基本情報</div>
             <div class="section-subtext">一部の情報は裏方部サービスを利用する他のユーザーに公開されます。</div>
             <div class="info-card">
@@ -431,7 +438,6 @@
         window.openPage = (pageId) => { document.getElementById('page-' + pageId).classList.add('open'); };
         window.closePage = (pageId) => { document.getElementById('page-' + pageId).classList.remove('open'); };
 
-        // ★ 管理者: ページオープン
         window.openAdminPage = async () => {
             openPage('admin');
             document.getElementById('adminUserList').innerHTML = '<div style="text-align:center; padding:20px;">読み込み中...</div>';
@@ -441,7 +447,6 @@
                 allUsersCache = [];
                 qs.forEach(doc => { 
                     const data = doc.data();
-                    // 互換性対応: org文字列があるならaffiliations配列に変換
                     if(!data.affiliations && data.org) data.affiliations = [data.org];
                     if(!data.affiliations) data.affiliations = [];
                     allUsersCache.push({ id: doc.id, ...data }); 
@@ -450,7 +455,6 @@
             } catch(e) { document.getElementById('adminUserList').innerHTML = "エラー: " + e.message; }
         };
 
-        // ★ 管理者: リスト描画
         function renderAdminList(users) {
             const container = document.getElementById('adminUserList');
             container.innerHTML = "";
@@ -460,33 +464,21 @@
                 div.className = 'user-list-item';
                 div.onclick = () => openAdminEdit(u);
                 
-                // 所属バッジ生成
                 let badges = "";
                 if(u.affiliations.includes('urakata')) badges += '<span style="color:#ea4335; font-size:10px; margin-right:4px;">●裏方</span>';
                 if(u.affiliations.includes('lmc')) badges += '<span style="color:#5f6368; font-size:10px;">●LMC</span>';
-                
                 let roleHtml = u.role ? `<span style="font-size:10px; background:#e0e3e7; padding:2px 6px; border-radius:10px; margin-left:5px;">${u.role}</span>` : '';
 
-                div.innerHTML = `
-                    <img src="${u.icon || 'https://placehold.jp/40x40.png'}" class="mini-icon">
-                    <div class="user-info-main">
-                        <div class="user-name">${u.name} ${roleHtml}</div>
-                        <div class="user-sub">${badges}</div>
-                    </div>
-                    <span class="material-icons" style="color:#ccc;">chevron_right</span>
-                `;
+                div.innerHTML = `<img src="${u.icon || 'https://placehold.jp/40x40.png'}" class="mini-icon"><div class="user-info-main"><div class="user-name">${u.name} ${roleHtml}</div><div class="user-sub">${badges}</div></div><span class="material-icons" style="color:#ccc;">chevron_right</span>`;
                 container.appendChild(div);
             });
         }
 
-        // ★ 管理者: 検索
         document.getElementById('adminSearchInput').addEventListener('input', (e) => {
             const term = e.target.value.trim();
-            const filtered = term ? allUsersCache.filter(u => u.name.includes(term) || (u.kana && u.kana.includes(term))) : allUsersCache;
-            renderAdminList(filtered);
+            renderAdminList(term ? allUsersCache.filter(u => u.name.includes(term) || (u.kana && u.kana.includes(term))) : allUsersCache);
         });
 
-        // ★ 管理者: 編集画面
         let editingUserId = null;
         function openAdminEdit(user) {
             editingUserId = user.id;
@@ -499,20 +491,16 @@
             document.getElementById('edit-studentId').value = user.studentId || "";
             document.getElementById('edit-role').value = user.role || "";
             document.getElementById('edit-job').value = user.job || "";
-            
-            // チェックボックス反映
             const affs = user.affiliations || [];
             document.getElementById('check-urakata').checked = affs.includes('urakata');
             document.getElementById('check-lmc').checked = affs.includes('lmc');
         }
 
-        // ★ 管理者: 保存
         document.getElementById('btn-save-user').addEventListener('click', async () => {
             if(!editingUserId) return;
             const btn = document.getElementById('btn-save-user');
             btn.innerText = "保存中...";
             try {
-                // チェックボックスから配列生成
                 const newAffiliations = [];
                 if(document.getElementById('check-urakata').checked) newAffiliations.push('urakata');
                 if(document.getElementById('check-lmc').checked) newAffiliations.push('lmc');
@@ -521,7 +509,7 @@
                     name: document.getElementById('edit-name').value,
                     kana: document.getElementById('edit-kana').value,
                     studentId: document.getElementById('edit-studentId').value,
-                    affiliations: newAffiliations, // ★ 配列で保存
+                    affiliations: newAffiliations,
                     job: document.getElementById('edit-job').value,
                     role: document.getElementById('edit-role').value
                 };
@@ -533,7 +521,6 @@
             finally { btn.innerText = "変更を保存"; }
         });
 
-        // --- メイン ---
         async function main() {
             try {
                 await liff.init({ liffId: MY_LIFF_ID });
@@ -544,10 +531,8 @@
 
                 if (userSnap.exists()) {
                     const data = userSnap.data();
-                    // 互換性: org -> affiliations
                     if(!data.affiliations && data.org) data.affiliations = [data.org];
                     if(!data.affiliations) data.affiliations = [];
-
                     await setDoc(userRef, { lastLogin: serverTimestamp(), icon: profile.pictureUrl }, { merge: true });
                     data.icon = profile.pictureUrl;
                     renderDashboard(data, userSnap.id);
@@ -589,15 +574,14 @@
                     let job = "";
                     if (registerMode === "urakata" && foundMasterDoc) job = foundMasterDoc.data().job || "";
 
-                    // 登録時の所属配列決定
                     let initialAffiliations = [];
-                    if(registerMode === "urakata") initialAffiliations = ["urakata", "lmc"]; // 裏方部は兼任とする場合
+                    if(registerMode === "urakata") initialAffiliations = ["urakata", "lmc"];
                     else initialAffiliations = ["lmc"];
 
                     await setDoc(userRef, {
                         lineUserId: profile.userId, lineDisplayName: profile.displayName, icon: profile.pictureUrl,
                         name: name, kana: kana, studentId: sId || "未設定", birthday: bday,
-                        role: "", affiliations: initialAffiliations, job: job, // ★ affiliations
+                        role: "", affiliations: initialAffiliations, job: job,
                         createdAt: serverTimestamp(), lastLogin: serverTimestamp()
                     });
                     if (registerMode === "urakata" && foundMasterDoc) {
@@ -628,8 +612,6 @@
             const iconWrapper = document.getElementById("iconWrapper");
             iconWrapper.className = "icon-wrapper";
             let ringClass = "";
-            
-            // ★ 所属判定ロジック: 裏方部があれば優先
             const affs = data.affiliations || [];
             const isUrakata = affs.includes("urakata");
             const isLmc = affs.includes("lmc");
@@ -646,18 +628,13 @@
             document.getElementById("displayName").innerText = data.lineDisplayName;
             document.getElementById("roleText").innerText = data.role || "";
 
-            // 管理者ボタン表示 (裏方部 かつ 役職持ち)
-            if(isUrakata && data.role) {
-                document.getElementById("btn-admin").classList.remove("hidden");
-            } else {
-                document.getElementById("btn-admin").classList.add("hidden");
-            }
+            if(isUrakata && data.role) document.getElementById("btn-admin").classList.remove("hidden");
+            else document.getElementById("btn-admin").classList.add("hidden");
 
             document.getElementById("showName").innerText = data.name;
             document.getElementById("showKana").innerText = data.kana || "-";
             document.getElementById("showStudentId").innerText = data.studentId || "-";
             
-            // 所属表示テキスト
             let orgText = "";
             if(isUrakata) orgText += "裏方部";
             if(isUrakata && isLmc) orgText += " / ";
@@ -679,7 +656,6 @@
             }
             document.getElementById("showUserId").innerText = docId;
 
-            // 会員証
             const cardIconWrapper = document.getElementById("cardIconWrapper");
             cardIconWrapper.className = "anim-icon"; 
             if(ringClass) cardIconWrapper.classList.add(ringClass);
