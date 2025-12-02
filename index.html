@@ -333,8 +333,8 @@
                 <div class="list-row"><span class="material-icons row-icon">diversity_3</span><div class="list-text-container"><div class="list-label">所属サークル</div><div id="showOrg" class="list-value"></div></div></div>
             </div>
             <div class="info-card">
-                <div class="list-row"><span class="material-icons row-icon">work_outline</span><div class="list-text-container"><div class="list-label">担当区分 (裏方)</div><div id="showJob" class="list-value"></div></div></div>
-                <div class="list-row"><span class="material-icons row-icon">music_note</span><div class="list-text-container"><div class="list-label">担当パート (LMC)</div><div id="showPart" class="list-value"></div></div></div>
+                <div id="row-job" class="list-row"><span class="material-icons row-icon">work_outline</span><div class="list-text-container"><div class="list-label">担当区分 (裏方)</div><div id="showJob" class="list-value"></div></div></div>
+                <div id="row-part" class="list-row"><span class="material-icons row-icon">music_note</span><div class="list-text-container"><div class="list-label">担当パート (LMC)</div><div id="showPart" class="list-value"></div></div></div>
                 
                 <div id="roleRowPage" class="list-row hidden"><span class="material-icons row-icon">star_outline</span><div class="list-text-container"><div class="list-label">役職</div><div id="showRoleInPage" class="list-value"></div></div></div>
             </div>
@@ -512,7 +512,7 @@
             document.getElementById('edit-studentId').value = user.studentId || "";
             document.getElementById('edit-role').value = user.role || "";
             document.getElementById('edit-job').value = user.job || "";
-            document.getElementById('edit-part').value = user.part || ""; // ★追加
+            document.getElementById('edit-part').value = user.part || "";
             const affs = user.affiliations || [];
             document.getElementById('check-urakata').checked = affs.includes('urakata');
             document.getElementById('check-lmc').checked = affs.includes('lmc');
@@ -533,7 +533,7 @@
                     studentId: document.getElementById('edit-studentId').value,
                     affiliations: newAffiliations,
                     job: document.getElementById('edit-job').value,
-                    part: document.getElementById('edit-part').value, // ★追加
+                    part: document.getElementById('edit-part').value, 
                     role: document.getElementById('edit-role').value
                 };
                 await updateDoc(doc(db, "users", editingUserId), newData);
@@ -592,7 +592,7 @@
                     const kana = document.getElementById("regKana").value.trim();
                     const sId = document.getElementById("regStudentId").value.trim();
                     const bday = document.getElementById("regBirthday").value;
-                    const part = document.getElementById("regPart").value; // ★追加
+                    const part = document.getElementById("regPart").value; 
                     if (!name || !bday) { document.getElementById("regError").innerText = "必須項目不足"; return; }
                     
                     let job = "";
@@ -605,7 +605,7 @@
                     await setDoc(userRef, {
                         lineUserId: profile.userId, lineDisplayName: profile.displayName, icon: profile.pictureUrl,
                         name: name, kana: kana, studentId: sId || "未設定", birthday: bday,
-                        role: "", affiliations: initialAffiliations, job: job, part: part, // ★保存
+                        role: "", affiliations: initialAffiliations, job: job, part: part,
                         createdAt: serverTimestamp(), lastLogin: serverTimestamp()
                     });
                     if (registerMode === "urakata" && foundMasterDoc) {
@@ -665,11 +665,24 @@
             if(isLmc) orgText += "LMC";
             document.getElementById("showOrg").innerText = orgText;
 
-            document.getElementById("showJob").innerText = getJobLabel(data.job);
-            
-            // ★追加: パート表示
-            document.getElementById("showPart").innerText = getPartLabel(data.part);
+            // ★ ここで出し分け: 裏方でないなら「担当区分」を隠す
+            const rowJob = document.getElementById("row-job");
+            if (isUrakata) {
+                document.getElementById("showJob").innerText = getJobLabel(data.job);
+                rowJob.classList.remove("hidden");
+            } else {
+                rowJob.classList.add("hidden");
+            }
 
+            // ★ ここで出し分け: LMCでないなら「担当パート」を隠す
+            const rowPart = document.getElementById("row-part");
+            if (isLmc) {
+                document.getElementById("showPart").innerText = getPartLabel(data.part);
+                rowPart.classList.remove("hidden");
+            } else {
+                rowPart.classList.add("hidden");
+            }
+            
             const roleRowPage = document.getElementById("roleRowPage");
             if (data.role) {
                 document.getElementById("showRoleInPage").innerText = data.role;
