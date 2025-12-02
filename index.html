@@ -23,7 +23,7 @@
             background-color: rgb(241, 244, 249);
         }
 
-        /* --- ヘッダーエリア --- */
+        /* --- ヘッダー --- */
         .profile-header {
             padding: 24px 20px;
             background: rgb(241, 244, 249);
@@ -55,7 +55,7 @@
         .header-san { font-size: 14px; color: #444746; }
         .header-role { font-size: 14px; color: #444746; font-weight: 500; }
 
-        /* --- メニューリスト --- */
+        /* --- メニュー --- */
         .menu-list {
             padding: 0 16px 40px;
             display: flex; flex-direction: column; gap: 12px;
@@ -92,20 +92,19 @@
         }
         .menu-icon-wrapper .material-icons { font-size: 24px; }
 
-        /* アイコン色設定 */
+        /* アイコン色 */
         .icon-basic { background-color: #c4eed0; color: #0f5223; }
         .icon-security { background-color: #c2e7ff; color: #001d35; }
         .icon-apps { background-color: #f3e5f5; color: #7b1fa2; }
         .icon-card { background-color: #ffdbc1; color: #bf360c; }
-        /* ★追加: 管理者用ピンク */
-        .icon-admin { background-color: #fce4ec; color: #c2185b; }
+        .icon-admin { background-color: #fce4ec; color: #c2185b; } /* ピンク */
 
         .menu-content { flex-grow: 1; }
         .menu-title { font-size: 16px; font-weight: 500; color: #1f1f1f; display: block; margin-bottom: 4px; }
         .menu-subtitle { font-size: 12px; color: #444746; display: block; line-height: 1.4; }
         .menu-arrow { color: #c4c7c5; font-size: 24px; }
 
-        /* --- 詳細ページ --- */
+        /* --- ページ遷移 --- */
         .page-container {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgb(241, 244, 249); z-index: 100;
@@ -158,7 +157,40 @@
             font-size:14px; display:flex; gap:12px; align-items:center;
         }
 
-        /* 会員証カード アニメーション */
+        /* --- 管理者画面用 --- */
+        .search-bar {
+            padding: 12px 16px; background:white; border-radius:30px; 
+            display:flex; align-items:center; margin-bottom:20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .search-bar input { border:none; width:100%; outline:none; font-size:16px; margin-left:10px; padding:0; }
+        
+        .user-list-item {
+            background: white; padding: 16px; border-radius: 16px;
+            display: flex; align-items: center; margin-bottom: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        .user-list-item:active { background-color: #f8f9fa; }
+        .mini-icon { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px; background: #eee; }
+        .user-info-main { flex-grow: 1; }
+        .user-name { font-size: 16px; font-weight: bold; color: #1f1f1f; }
+        .user-sub { font-size: 12px; color: #5f6368; }
+        .user-role-badge { 
+            font-size: 10px; padding: 2px 8px; border-radius: 10px; 
+            background: #e0e3e7; color: #444746; margin-left: 5px;
+        }
+
+        /* 編集フォーム（管理者用） */
+        .edit-form-group { margin-bottom: 20px; }
+        .edit-label { font-size: 12px; color: #5f6368; margin-bottom: 6px; display: block; }
+        .edit-input, .edit-select {
+            width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px;
+            font-size: 16px; box-sizing: border-box; background: white;
+        }
+        .edit-select { appearance: none; } /* 本来はアイコンつけたいけど簡易的に */
+
+        /* 会員証アニメ */
         .member-card {
             background: #ffffff; padding: 40px 30px;
             border-radius: 28px;
@@ -166,41 +198,27 @@
             text-align: center; margin-top: 20px;
             position: relative; overflow: hidden;
         }
-        
         .page-container.open .anim-header {
             display: flex; align-items: center; justify-content: flex-start;
             position: relative; padding-left: 0; margin-bottom: 30px; height: 100px;
         }
-
         .page-container.open .anim-icon {
-            width: 90px; height: 90px;
-            border-radius: 50%;
+            width: 90px; height: 90px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             background: #dadce0; flex-shrink: 0;
             animation: slideIconLeft 1.2s cubic-bezier(0.2, 0, 0, 1) forwards;
         }
-        
         .page-container.open .anim-text {
             text-align: left; margin-left: 20px; opacity: 0;
             animation: fadeInText 1.2s cubic-bezier(0.2, 0, 0, 1) 0.3s forwards;
         }
-
-        @keyframes slideIconLeft {
-            0% { transform: translateX(110%); }
-            20% { transform: translateX(110%); }
-            100% { transform: translateX(0); }
-        }
-        @keyframes fadeInText {
-            0% { opacity: 0; transform: translateX(20px); }
-            100% { opacity: 1; transform: translateX(0); }
-        }
-
+        @keyframes slideIconLeft { 0% { transform: translateX(110%); } 20% { transform: translateX(110%); } 100% { transform: translateX(0); } }
+        @keyframes fadeInText { 0% { opacity: 0; transform: translateX(20px); } 100% { opacity: 1; transform: translateX(0); } }
         .anim-icon .profile-icon { width: 82px; height: 82px; border-width: 4px; }
-
         .qr-section { margin-top: 30px; text-align: center; }
         .qr-image { width: 160px; height: 160px; mix-blend-mode: multiply; }
         
-        /* ログイン画面 */
+        /* ログイン */
         .center-screen {
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             height: 100vh; padding: 20px; box-sizing: border-box; background: #fff;
@@ -208,14 +226,15 @@
         .input-group { width: 100%; margin-bottom: 20px; text-align: left; }
         label { display: block; font-size: 12px; color: #5f6368; margin-bottom: 8px; }
         input {
-            width: 100%; padding: 13px 15px;
-            border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; box-sizing: border-box;
+            width: 100%; padding: 13px 15px; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; box-sizing: border-box;
         }
         button {
             width: 100%; padding: 12px; border: none; border-radius: 4px;
             background-color: #0b57d0; color: white; font-weight: 500; cursor: pointer;
         }
         button.secondary { background: white; color: #0b57d0; border: 1px solid #dadce0; margin-top: 10px; }
+        /* 管理者用保存ボタン */
+        button.admin-save { background-color: #c2185b; } /* ピンク */
         
         .error { color: #d93025; font-size: 12px; margin-top: 5px; }
         .hidden { display: none !important; }
@@ -278,9 +297,7 @@
 
         <div class="menu-list">
             <button class="menu-btn" onclick="openPage('basicInfo')">
-                <div class="menu-icon-wrapper icon-basic">
-                    <span class="material-icons">person_outline</span>
-                </div>
+                <div class="menu-icon-wrapper icon-basic"><span class="material-icons">person_outline</span></div>
                 <div class="menu-content">
                     <span class="menu-title">基本情報</span>
                     <span class="menu-subtitle">名前、学籍番号、所属サークル</span>
@@ -290,9 +307,7 @@
             
             <div class="menu-group">
                 <button class="menu-group-item with-border" onclick="openPage('security')">
-                    <div class="menu-icon-wrapper icon-security">
-                        <span class="material-icons">security</span>
-                    </div>
+                    <div class="menu-icon-wrapper icon-security"><span class="material-icons">security</span></div>
                     <div class="menu-content">
                         <span class="menu-title">セキュリティとログイン</span>
                         <span class="menu-subtitle">ログイン方法、最近のセキュリティイベント</span>
@@ -300,9 +315,7 @@
                     <span class="material-icons menu-arrow">chevron_right</span>
                 </button>
                 <button class="menu-group-item" onclick="openPage('dataPrivacy')">
-                    <div class="menu-icon-wrapper icon-security">
-                        <span class="material-icons">privacy_tip</span>
-                    </div>
+                    <div class="menu-icon-wrapper icon-security"><span class="material-icons">privacy_tip</span></div>
                     <div class="menu-content">
                         <span class="menu-title">データとプライバシー</span>
                         <span class="menu-subtitle">データの削除、アカウントの停止</span>
@@ -312,9 +325,7 @@
             </div>
             
             <button class="menu-btn" onclick="openPage('apps')">
-                <div class="menu-icon-wrapper icon-apps">
-                    <span class="material-icons">apps</span>
-                </div>
+                <div class="menu-icon-wrapper icon-apps"><span class="material-icons">apps</span></div>
                 <div class="menu-content">
                     <span class="menu-title">アプリと連携</span>
                     <span class="menu-subtitle">アプリとサービス、LMCアプリとの連携</span>
@@ -323,9 +334,7 @@
             </button>
 
             <button class="menu-btn" onclick="openPage('memberCard')">
-                <div class="menu-icon-wrapper icon-card">
-                    <span class="material-icons">badge</span>
-                </div>
+                <div class="menu-icon-wrapper icon-card"><span class="material-icons">badge</span></div>
                 <div class="menu-content">
                     <span class="menu-title">会員証</span>
                     <span class="menu-subtitle">デジタル会員証を表示</span>
@@ -333,10 +342,8 @@
                 <span class="material-icons menu-arrow">chevron_right</span>
             </button>
 
-            <button id="btn-admin" class="menu-btn hidden" onclick="openPage('admin')">
-                <div class="menu-icon-wrapper icon-admin">
-                    <span class="material-icons">admin_panel_settings</span>
-                </div>
+            <button id="btn-admin" class="menu-btn hidden" onclick="openAdminPage()">
+                <div class="menu-icon-wrapper icon-admin"><span class="material-icons">admin_panel_settings</span></div>
                 <div class="menu-content">
                     <span class="menu-title">データの管理</span>
                     <span class="menu-subtitle">他ユーザーデータの編集、閲覧</span>
@@ -347,10 +354,7 @@
     </div>
 
     <div id="page-basicInfo" class="page-container">
-        <div class="page-header">
-            <button class="back-btn" onclick="closePage('basicInfo')"><span class="material-icons">arrow_back</span></button>
-            <div class="page-title">基本情報</div>
-        </div>
+        <div class="page-header"><button class="back-btn" onclick="closePage('basicInfo')"><span class="material-icons">arrow_back</span></button><div class="page-title">基本情報</div></div>
         <div class="content-area">
             <div class="page-description">
                 <div class="page-hero-title">裏方部サービスの<br>プロフィール情報</div>
@@ -358,7 +362,6 @@
             </div>
             <div class="section-header">基本情報</div>
             <div class="section-subtext">一部の情報は裏方部サービスを利用する他のユーザーに公開されます。</div>
-            
             <div class="info-card">
                 <div class="list-row"><span class="material-icons row-icon">badge</span><div class="list-text-container"><div class="list-label">氏名</div><div id="showName" class="list-value"></div></div></div>
                 <div class="list-row"><span class="material-icons row-icon">text_format</span><div class="list-text-container"><div class="list-label">ふりがな</div><div id="showKana" class="list-value"></div></div></div>
@@ -373,10 +376,7 @@
     </div>
 
     <div id="page-security" class="page-container">
-        <div class="page-header">
-            <button class="back-btn" onclick="closePage('security')"><span class="material-icons">arrow_back</span></button>
-            <div class="page-title">セキュリティとログイン</div>
-        </div>
+        <div class="page-header"><button class="back-btn" onclick="closePage('security')"><span class="material-icons">arrow_back</span></button><div class="page-title">セキュリティとログイン</div></div>
         <div class="content-area">
             <div class="security-alert"><span class="material-icons">verified_user</span><div><div style="font-weight:bold; margin-bottom:2px;">アカウントは保護されています</div><div style="font-size:12px; opacity:0.8;">推奨される操作はありません</div></div></div>
             <div class="info-card">
@@ -388,10 +388,7 @@
     </div>
 
     <div id="page-dataPrivacy" class="page-container">
-        <div class="page-header">
-            <button class="back-btn" onclick="closePage('dataPrivacy')"><span class="material-icons">arrow_back</span></button>
-            <div class="page-title">データとプライバシー</div>
-        </div>
+        <div class="page-header"><button class="back-btn" onclick="closePage('dataPrivacy')"><span class="material-icons">arrow_back</span></button><div class="page-title">データとプライバシー</div></div>
         <div class="content-area">
             <div class="info-card">
                 <div class="list-row"><div class="list-text-container"><div class="list-label">データの削除</div><div class="list-value">現在利用可能なオプションはありません</div></div></div>
@@ -401,10 +398,7 @@
     </div>
 
     <div id="page-apps" class="page-container">
-        <div class="page-header">
-            <button class="back-btn" onclick="closePage('apps')"><span class="material-icons">arrow_back</span></button>
-            <div class="page-title">アプリと連携</div>
-        </div>
+        <div class="page-header"><button class="back-btn" onclick="closePage('apps')"><span class="material-icons">arrow_back</span></button><div class="page-title">アプリと連携</div></div>
         <div class="content-area">
             <div class="info-card">
                 <div class="list-row"><div class="list-text-container"><div class="list-label">現在連携中のアプリはありません</div><div class="list-value" style="margin-top:4px;">サードパーティ製のアプリやサービスと連携するとここに表示されます。</div></div></div>
@@ -413,19 +407,12 @@
     </div>
 
     <div id="page-memberCard" class="page-container">
-        <div class="page-header">
-            <button class="back-btn" onclick="closePage('memberCard')"><span class="material-icons">arrow_back</span></button>
-            <div class="page-title">会員証</div>
-        </div>
+        <div class="page-header"><button class="back-btn" onclick="closePage('memberCard')"><span class="material-icons">arrow_back</span></button><div class="page-title">会員証</div></div>
         <div class="content-area">
             <div class="member-card">
-                <div style="font-weight:bold; font-size:20px; color:#5f6368; margin-bottom:20px;">
-                    <span style="color:#4285f4;">G</span>Member
-                </div>
+                <div style="font-weight:bold; font-size:20px; color:#5f6368; margin-bottom:20px;"><span style="color:#4285f4;">G</span>Member</div>
                 <div class="anim-header">
-                    <div id="cardIconWrapper" class="anim-icon">
-                        <img id="cardIcon" src="" class="profile-icon">
-                    </div>
+                    <div id="cardIconWrapper" class="anim-icon"><img id="cardIcon" src="" class="profile-icon"></div>
                     <div class="anim-text">
                         <div id="cardName" style="font-size:20px; font-weight:bold; color:#1f1f1f;"></div>
                         <div id="cardRoleBadge" class="job-badge hidden" style="margin-top:4px;"></div>
@@ -446,20 +433,76 @@
             <div class="page-title">データの管理</div>
         </div>
         <div class="content-area">
-            <div class="info-card">
-                <div class="list-row">
-                    <div class="list-text-container">
-                        <div class="list-label">管理者メニュー</div>
-                        <div class="list-value">ここから他のユーザーのデータを検索・編集できます。(開発中)</div>
-                    </div>
+            <div class="search-bar">
+                <span class="material-icons" style="color:#5f6368;">search</span>
+                <input type="text" id="adminSearchInput" placeholder="ユーザー名で検索...">
+            </div>
+            <div id="adminUserList">
                 </div>
+        </div>
+    </div>
+
+    <div id="page-admin-edit" class="page-container">
+        <div class="page-header">
+            <button class="back-btn" onclick="closePage('admin-edit')"><span class="material-icons">arrow_back</span></button>
+            <div class="page-title">ユーザー編集</div>
+        </div>
+        <div class="content-area">
+            <div style="text-align:center; margin-bottom:20px;">
+                <img id="edit-icon" src="" style="width:80px; height:80px; border-radius:50%; object-fit:cover;">
+                <div id="edit-lineName" style="font-size:14px; color:#5f6368; margin-top:8px;"></div>
+            </div>
+
+            <div class="info-card" style="padding:20px;">
+                <div class="edit-form-group">
+                    <label class="edit-label">氏名</label>
+                    <input type="text" id="edit-name" class="edit-input">
+                </div>
+                <div class="edit-form-group">
+                    <label class="edit-label">ふりがな</label>
+                    <input type="text" id="edit-kana" class="edit-input">
+                </div>
+                <div class="edit-form-group">
+                    <label class="edit-label">学籍番号</label>
+                    <input type="text" id="edit-studentId" class="edit-input">
+                </div>
+                
+                <div class="edit-form-group">
+                    <label class="edit-label">所属 (urakata / lmc)</label>
+                    <select id="edit-org" class="edit-select">
+                        <option value="urakata">裏方部 (urakata)</option>
+                        <option value="lmc">LMC (lmc)</option>
+                    </select>
+                </div>
+
+                <div class="edit-form-group">
+                    <label class="edit-label">担当区分 (job)</label>
+                    <select id="edit-job" class="edit-select">
+                        <option value="">なし</option>
+                        <option value="sound">音響 (sound)</option>
+                        <option value="light">照明 (light)</option>
+                        <option value="stage">舞台 (stage)</option>
+                        <option value="video">映像・カメラマン (video)</option>
+                    </select>
+                </div>
+
+                <div class="edit-form-group">
+                    <label class="edit-label">役職 (role) ※空欄でなし</label>
+                    <input type="text" id="edit-role" class="edit-input" placeholder="例: 部長, チーフ">
+                </div>
+
+                <button id="btn-save-user" class="admin-save" style="width:100%; color:white; border:none; padding:15px; border-radius:8px; font-weight:bold;">変更を保存</button>
+            </div>
+            
+            <div style="font-size:10px; color:#999; text-align:center; margin-top:20px;">
+                USER ID: <span id="edit-docId"></span>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAWtITnn5uMOPBgOY0Bd7Rt5IN1ry8XoJI",
@@ -477,10 +520,129 @@
 
         let registerMode = "";
         let foundMasterDoc = null; 
+        
+        // 全ユーザーリスト（管理者用キャッシュ）
+        let allUsersCache = [];
 
         window.openPage = (pageId) => { document.getElementById('page-' + pageId).classList.add('open'); };
         window.closePage = (pageId) => { document.getElementById('page-' + pageId).classList.remove('open'); };
 
+        // ★管理者機能: ページを開く＆リスト取得
+        window.openAdminPage = async () => {
+            openPage('admin');
+            const listContainer = document.getElementById('adminUserList');
+            listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#666;">読み込み中...</div>';
+            
+            try {
+                // 全ユーザー取得 (件数が多すぎると遅くなるので注意。今回は100人想定なので全件取得)
+                const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+                const qs = await getDocs(q);
+                
+                allUsersCache = [];
+                qs.forEach(doc => {
+                    allUsersCache.push({ id: doc.id, ...doc.data() });
+                });
+                
+                renderAdminList(allUsersCache);
+
+            } catch(e) {
+                listContainer.innerHTML = `<div style="color:red; text-align:center;">エラー: ${e.message}</div>`;
+            }
+        };
+
+        // ★管理者機能: リスト描画
+        function renderAdminList(users) {
+            const listContainer = document.getElementById('adminUserList');
+            listContainer.innerHTML = "";
+            
+            if(users.length === 0) {
+                listContainer.innerHTML = '<div style="text-align:center; padding:20px;">ユーザーが見つかりません</div>';
+                return;
+            }
+
+            users.forEach(u => {
+                const div = document.createElement('div');
+                div.className = 'user-list-item';
+                div.onclick = () => openAdminEdit(u);
+                
+                // 所属バッジ
+                let orgBadge = u.org === 'urakata' ? '<span style="color:#ea4335; font-size:10px;">●裏方</span>' : '<span style="color:#5f6368; font-size:10px;">●LMC</span>';
+                // 役職バッジ
+                let roleBadge = u.role ? `<span class="user-role-badge">${u.role}</span>` : '';
+
+                div.innerHTML = `
+                    <img src="${u.icon || 'https://placehold.jp/40x40.png'}" class="mini-icon">
+                    <div class="user-info-main">
+                        <div class="user-name">${u.name} ${roleBadge}</div>
+                        <div class="user-sub">${orgBadge} ${u.studentId || ''}</div>
+                    </div>
+                    <span class="material-icons" style="color:#ccc;">chevron_right</span>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        // ★管理者機能: 検索
+        document.getElementById('adminSearchInput').addEventListener('input', (e) => {
+            const term = e.target.value.trim();
+            if(!term) {
+                renderAdminList(allUsersCache);
+            } else {
+                const filtered = allUsersCache.filter(u => u.name.includes(term) || (u.kana && u.kana.includes(term)));
+                renderAdminList(filtered);
+            }
+        });
+
+        // ★管理者機能: 編集画面を開く
+        let editingUserId = null;
+        function openAdminEdit(user) {
+            editingUserId = user.id;
+            openPage('admin-edit');
+            
+            document.getElementById('edit-icon').src = user.icon || "";
+            document.getElementById('edit-lineName').innerText = "LINE: " + user.lineDisplayName;
+            document.getElementById('edit-docId').innerText = user.id;
+            
+            document.getElementById('edit-name').value = user.name || "";
+            document.getElementById('edit-kana').value = user.kana || "";
+            document.getElementById('edit-studentId').value = user.studentId || "";
+            document.getElementById('edit-role').value = user.role || "";
+            
+            document.getElementById('edit-org').value = user.org || "lmc";
+            document.getElementById('edit-job').value = user.job || "";
+        }
+
+        // ★管理者機能: 保存処理
+        document.getElementById('btn-save-user').addEventListener('click', async () => {
+            if(!editingUserId) return;
+            const btn = document.getElementById('btn-save-user');
+            btn.innerText = "保存中...";
+            
+            try {
+                const newData = {
+                    name: document.getElementById('edit-name').value,
+                    kana: document.getElementById('edit-kana').value,
+                    studentId: document.getElementById('edit-studentId').value,
+                    org: document.getElementById('edit-org').value,
+                    job: document.getElementById('edit-job').value,
+                    role: document.getElementById('edit-role').value
+                };
+                
+                await updateDoc(doc(db, "users", editingUserId), newData);
+                
+                alert("保存しました");
+                closePage('admin-edit');
+                openAdminPage(); // リスト再読み込み
+                
+            } catch(e) {
+                alert("保存エラー: " + e.message);
+            } finally {
+                btn.innerText = "変更を保存";
+            }
+        });
+
+
+        // --- メインロジック ---
         async function main() {
             try {
                 await liff.init({ liffId: MY_LIFF_ID });
@@ -580,7 +742,7 @@
             document.getElementById("displayName").innerText = data.lineDisplayName;
             document.getElementById("roleText").innerText = data.role || "";
 
-            // ★ 管理者ボタンの表示制御
+            // ★ 管理者ボタン制御
             if(data.org === "urakata" && data.role) {
                 document.getElementById("btn-admin").classList.remove("hidden");
             } else {
@@ -608,6 +770,7 @@
             }
             document.getElementById("showUserId").innerText = docId;
 
+            // 会員証
             const cardIconWrapper = document.getElementById("cardIconWrapper");
             cardIconWrapper.className = "anim-icon"; 
             if(ringClass) cardIconWrapper.classList.add(ringClass);
