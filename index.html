@@ -16,6 +16,7 @@
             color: #1f1f1f;
             min-height: 100vh;
             overscroll-behavior-y: none;
+            overflow-x: hidden; /* 風船のはみ出し防止 */
         }
 
         .container {
@@ -52,18 +53,12 @@
         .ring-stage { background: #34A853; box-shadow: 0 0 10px rgba(52, 168, 83, 0.3); }
         .ring-video { background: #EA4335; box-shadow: 0 0 10px rgba(234, 67, 53, 0.3); }
 
-        /* ★ お誕生日スペシャルエフェクト ★ */
+        /* ★ お誕生日リング（ケーキアイコンは削除し、発光のみ） ★ */
         .ring-birthday {
             background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
             background-size: 400%;
             animation: birthday-glow 3s linear infinite;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-        }
-        .ring-birthday::after {
-            content: '🎂';
-            position: absolute; top: -10px; right: -10px;
-            font-size: 24px; z-index: 10;
-            animation: bounce 1s infinite;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
         }
 
         @keyframes birthday-glow {
@@ -71,9 +66,20 @@
             50% { background-position: 400% 0; }
             100% { background-position: 0 0; }
         }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+
+        /* ★ 風船アニメーション用 ★ */
+        .balloon {
+            position: fixed;
+            bottom: -50px;
+            font-size: 2rem;
+            opacity: 0.9;
+            z-index: 9999;
+            pointer-events: none; /* クリックを邪魔しない */
+            animation: floatUp linear forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
         }
 
         .header-text { flex-grow: 1; }
@@ -354,7 +360,7 @@
                 <div class="list-row"><span class="material-icons row-icon">text_format</span><div class="list-text-container"><div class="list-label">ふりがな</div><div id="showKana" class="list-value"></div></div></div>
                 <div class="list-row"><span class="material-icons row-icon">school</span><div class="list-text-container"><div class="list-label">学籍番号</div><div id="showStudentId" class="list-value"></div></div></div>
                 <div class="list-row"><span class="material-icons row-icon">diversity_3</span><div class="list-text-container"><div class="list-label">所属サークル</div><div id="showOrg" class="list-value"></div></div></div>
-                <div class="list-row"><span class="material-icons row-icon">cake</span><div class="list-text-container"><div class="list-label">生年月日</div><div id="showBirthday" class="list-value"></div></div></div>
+                <div class="list-row"><span class="material-icons row-icon">celebration</span><div class="list-text-container"><div class="list-label">生年月日</div><div id="showBirthday" class="list-value"></div></div></div>
             </div>
             <div class="info-card">
                 <div id="row-job" class="list-row"><span class="material-icons row-icon">work_outline</span><div class="list-text-container"><div class="list-label">担当区分 (裏方)</div><div id="showJob" class="list-value"></div></div></div>
@@ -435,17 +441,7 @@
                     </div>
                 </div>
                 <div class="edit-form-group"><label class="edit-label">担当区分 (job: 裏方)</label><select id="edit-job" class="edit-select"><option value="">なし</option><option value="sound">音響</option><option value="light">照明</option><option value="stage">舞台</option><option value="video">映像・カメラマン</option></select></div>
-                <div class="edit-form-group">
-                    <label class="edit-label">担当パート (part: LMC)</label>
-                    <select id="edit-part" class="edit-select">
-                        <option value="">なし</option>
-                        <option value="vocal">ボーカル</option>
-                        <option value="guitar">ギター</option>
-                        <option value="bass">ベース</option>
-                        <option value="drums">ドラム</option>
-                        <option value="keyboard">キーボード</option>
-                    </select>
-                </div>
+                <div class="edit-form-group"><label class="edit-label">担当パート (part: LMC)</label><select id="edit-part" class="edit-select"><option value="">なし</option><option value="vocal">ボーカル</option><option value="guitar">ギター</option><option value="bass">ベース</option><option value="drums">ドラム</option><option value="keyboard">キーボード</option></select></div>
                 <div class="edit-form-group"><label class="edit-label">役職 (role)</label><input type="text" id="edit-role" class="edit-input" placeholder="例: 部長, チーフ"></div>
                 <button id="btn-save-user" class="admin-save" style="width:100%; color:white; border:none; padding:15px; border-radius:8px; font-weight:bold;">変更を保存</button>
             </div>
@@ -659,18 +655,20 @@
             const isUrakata = affs.includes("urakata");
             const isLmc = affs.includes("lmc");
 
-            // ★ 誕生日判定: 今日が誕生日なら強制的にバースデーリング
+            // ★ 誕生日判定＆風船エフェクト
             let isBirthday = false;
             if (data.birthday) {
                 const today = new Date();
                 const bday = new Date(data.birthday);
                 if (today.getMonth() === bday.getMonth() && today.getDate() === bday.getDate()) {
                     isBirthday = true;
+                    // 風船アニメーション発動
+                    startBalloonAnimation();
                 }
             }
 
             if (isBirthday) {
-                iconWrapper.classList.add("ring-birthday"); // 最優先
+                iconWrapper.classList.add("ring-birthday"); // バースデー最優先
             } else if (isUrakata) {
                  if(data.job === "sound") ringClass = "ring-sound";
                  else if(data.job === "light") ringClass = "ring-light";
@@ -697,7 +695,7 @@
             if(isLmc) orgText += "LMC";
             document.getElementById("showOrg").innerText = orgText;
 
-            // 生年月日
+            // 誕生日表示
             document.getElementById("showBirthday").innerText = data.birthday || "未設定";
 
             // 出し分け
@@ -728,7 +726,7 @@
 
             const cardIconWrapper = document.getElementById("cardIconWrapper");
             cardIconWrapper.className = "anim-icon"; 
-            if (isBirthday) cardIconWrapper.classList.add("ring-birthday");
+            if(isBirthday) cardIconWrapper.classList.add("ring-birthday");
             else if(ringClass) cardIconWrapper.classList.add(ringClass);
             
             document.getElementById("cardIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
@@ -742,6 +740,41 @@
             document.getElementById("cardTagline").innerText = isUrakata ? "裏方部部員" : "LMC";
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${docId}`;
             document.getElementById("cardQr").src = qrUrl;
+        }
+
+        // ★ 風船アニメーション生成関数
+        function startBalloonAnimation() {
+            const container = document.createElement('div');
+            container.style.position = 'fixed';
+            container.style.top = '0';
+            container.style.left = '0';
+            container.style.width = '100%';
+            container.style.height = '100%';
+            container.style.pointerEvents = 'none';
+            container.style.zIndex = '9999';
+            container.style.overflow = 'hidden';
+            document.body.appendChild(container);
+
+            const balloonCount = 30; // 風船の数
+            
+            for (let i = 0; i < balloonCount; i++) {
+                setTimeout(() => {
+                    const b = document.createElement('div');
+                    b.innerHTML = '🎈'; // 風船の絵文字
+                    b.className = 'balloon';
+                    b.style.left = Math.random() * 100 + 'vw';
+                    b.style.fontSize = (Math.random() * 30 + 30) + 'px'; // サイズランダム
+                    // アニメーション速度をランダムに (4s〜8s)
+                    b.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                    container.appendChild(b);
+                    
+                    // 終わったら要素を消す
+                    setTimeout(() => b.remove(), 8000);
+                }, i * 400); // 0.4秒ごとに生成
+            }
+            
+            // コンテナ自体も後で消す
+            setTimeout(() => container.remove(), (balloonCount * 400) + 8000);
         }
 
         function getJobLabel(job) {
