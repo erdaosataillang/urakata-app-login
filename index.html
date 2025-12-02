@@ -37,11 +37,12 @@
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             background: #dadce0; flex-shrink: 0;
+            position: relative;
         }
         .profile-icon {
             width: 66px; height: 66px;
             border-radius: 50%; object-fit: cover;
-            border: 3px solid #fff; background-color: white;
+            border: 3px solid #fff; background-color: white; z-index: 2;
         }
         
         /* リング色 */
@@ -50,6 +51,30 @@
         .ring-light { background: #fa7b17; box-shadow: 0 0 10px rgba(250, 123, 23, 0.3); }
         .ring-stage { background: #34A853; box-shadow: 0 0 10px rgba(52, 168, 83, 0.3); }
         .ring-video { background: #EA4335; box-shadow: 0 0 10px rgba(234, 67, 53, 0.3); }
+
+        /* ★ お誕生日スペシャルエフェクト ★ */
+        .ring-birthday {
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            animation: birthday-glow 3s linear infinite;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+        }
+        .ring-birthday::after {
+            content: '🎂';
+            position: absolute; top: -10px; right: -10px;
+            font-size: 24px; z-index: 10;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes birthday-glow {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
 
         .header-text { flex-grow: 1; }
         .name-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
@@ -253,7 +278,6 @@
             <div class="input-group"><label>氏名</label><input type="text" id="regName"></div>
             <div class="input-group"><label>ふりがな</label><input type="text" id="regKana"></div>
             <div class="input-group"><label>学籍番号</label><input type="text" id="regStudentId" placeholder="例: 2024001"></div>
-            
             <div class="input-group">
                 <label>担当パート (LMC用)</label>
                 <select id="regPart">
@@ -265,7 +289,6 @@
                     <option value="keyboard">キーボード</option>
                 </select>
             </div>
-
             <div class="input-group"><label>生年月日</label><input type="date" id="regBirthday"><div id="regError" class="error"></div></div>
             <button id="commitBtn">登録完了</button>
             <button id="backBtn" class="secondary">戻る</button>
@@ -331,11 +354,11 @@
                 <div class="list-row"><span class="material-icons row-icon">text_format</span><div class="list-text-container"><div class="list-label">ふりがな</div><div id="showKana" class="list-value"></div></div></div>
                 <div class="list-row"><span class="material-icons row-icon">school</span><div class="list-text-container"><div class="list-label">学籍番号</div><div id="showStudentId" class="list-value"></div></div></div>
                 <div class="list-row"><span class="material-icons row-icon">diversity_3</span><div class="list-text-container"><div class="list-label">所属サークル</div><div id="showOrg" class="list-value"></div></div></div>
+                <div class="list-row"><span class="material-icons row-icon">cake</span><div class="list-text-container"><div class="list-label">生年月日</div><div id="showBirthday" class="list-value"></div></div></div>
             </div>
             <div class="info-card">
                 <div id="row-job" class="list-row"><span class="material-icons row-icon">work_outline</span><div class="list-text-container"><div class="list-label">担当区分 (裏方)</div><div id="showJob" class="list-value"></div></div></div>
                 <div id="row-part" class="list-row"><span class="material-icons row-icon">music_note</span><div class="list-text-container"><div class="list-label">担当パート (LMC)</div><div id="showPart" class="list-value"></div></div></div>
-                
                 <div id="roleRowPage" class="list-row hidden"><span class="material-icons row-icon">star_outline</span><div class="list-text-container"><div class="list-label">役職</div><div id="showRoleInPage" class="list-value"></div></div></div>
             </div>
         </div>
@@ -404,7 +427,6 @@
                 <div class="edit-form-group"><label class="edit-label">氏名</label><input type="text" id="edit-name" class="edit-input"></div>
                 <div class="edit-form-group"><label class="edit-label">ふりがな</label><input type="text" id="edit-kana" class="edit-input"></div>
                 <div class="edit-form-group"><label class="edit-label">学籍番号</label><input type="text" id="edit-studentId" class="edit-input"></div>
-                
                 <div class="edit-form-group">
                     <label class="edit-label">所属 (複数選択可)</label>
                     <div class="checkbox-group">
@@ -412,9 +434,7 @@
                         <label class="checkbox-label"><input type="checkbox" id="check-lmc" value="lmc"> LMC</label>
                     </div>
                 </div>
-
                 <div class="edit-form-group"><label class="edit-label">担当区分 (job: 裏方)</label><select id="edit-job" class="edit-select"><option value="">なし</option><option value="sound">音響</option><option value="light">照明</option><option value="stage">舞台</option><option value="video">映像・カメラマン</option></select></div>
-                
                 <div class="edit-form-group">
                     <label class="edit-label">担当パート (part: LMC)</label>
                     <select id="edit-part" class="edit-select">
@@ -426,7 +446,6 @@
                         <option value="keyboard">キーボード</option>
                     </select>
                 </div>
-
                 <div class="edit-form-group"><label class="edit-label">役職 (role)</label><input type="text" id="edit-role" class="edit-input" placeholder="例: 部長, チーフ"></div>
                 <button id="btn-save-user" class="admin-save" style="width:100%; color:white; border:none; padding:15px; border-radius:8px; font-weight:bold;">変更を保存</button>
             </div>
@@ -640,7 +659,19 @@
             const isUrakata = affs.includes("urakata");
             const isLmc = affs.includes("lmc");
 
-            if (isUrakata) {
+            // ★ 誕生日判定: 今日が誕生日なら強制的にバースデーリング
+            let isBirthday = false;
+            if (data.birthday) {
+                const today = new Date();
+                const bday = new Date(data.birthday);
+                if (today.getMonth() === bday.getMonth() && today.getDate() === bday.getDate()) {
+                    isBirthday = true;
+                }
+            }
+
+            if (isBirthday) {
+                iconWrapper.classList.add("ring-birthday"); // 最優先
+            } else if (isUrakata) {
                  if(data.job === "sound") ringClass = "ring-sound";
                  else if(data.job === "light") ringClass = "ring-light";
                  else if(data.job === "stage") ringClass = "ring-stage";
@@ -648,6 +679,7 @@
                  else ringClass = "ring-rainbow";
                  iconWrapper.classList.add(ringClass);
             }
+
             document.getElementById("myIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
             document.getElementById("displayName").innerText = data.lineDisplayName;
             document.getElementById("roleText").innerText = data.role || "";
@@ -665,23 +697,21 @@
             if(isLmc) orgText += "LMC";
             document.getElementById("showOrg").innerText = orgText;
 
-            // ★ ここで出し分け: 裏方でないなら「担当区分」を隠す
+            // 生年月日
+            document.getElementById("showBirthday").innerText = data.birthday || "未設定";
+
+            // 出し分け
             const rowJob = document.getElementById("row-job");
             if (isUrakata) {
                 document.getElementById("showJob").innerText = getJobLabel(data.job);
                 rowJob.classList.remove("hidden");
-            } else {
-                rowJob.classList.add("hidden");
-            }
+            } else { rowJob.classList.add("hidden"); }
 
-            // ★ ここで出し分け: LMCでないなら「担当パート」を隠す
             const rowPart = document.getElementById("row-part");
             if (isLmc) {
                 document.getElementById("showPart").innerText = getPartLabel(data.part);
                 rowPart.classList.remove("hidden");
-            } else {
-                rowPart.classList.add("hidden");
-            }
+            } else { rowPart.classList.add("hidden"); }
             
             const roleRowPage = document.getElementById("roleRowPage");
             if (data.role) {
@@ -698,7 +728,9 @@
 
             const cardIconWrapper = document.getElementById("cardIconWrapper");
             cardIconWrapper.className = "anim-icon"; 
-            if(ringClass) cardIconWrapper.classList.add(ringClass);
+            if (isBirthday) cardIconWrapper.classList.add("ring-birthday");
+            else if(ringClass) cardIconWrapper.classList.add(ringClass);
+            
             document.getElementById("cardIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
             document.getElementById("cardName").innerText = data.name;
             const cardRoleBadge = document.getElementById("cardRoleBadge");
