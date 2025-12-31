@@ -442,6 +442,11 @@
                     <div class="menu-content"><span class="menu-title">データとプライバシー</span><span class="menu-subtitle">データの削除、アカウントの停止</span></div>
                     <span class="material-icons menu-arrow">chevron_right</span>
                 </button>
+                <button class="menu-group-item" onclick="openPage('loginMethods')">
+                    <div class="menu-icon-wrapper icon-security" style="background-color: #e8f0fe; color: #1967d2;"><span class="material-icons">login</span></div>
+                    <div class="menu-content"><span class="menu-title">ログイン方法</span><span class="menu-subtitle">Googleアカウント連携など</span></div>
+                    <span class="material-icons menu-arrow">chevron_right</span>
+                </button>
             </div>
             <button class="menu-btn" onclick="openPage('apps')">
                 <div class="menu-icon-wrapper icon-apps"><span class="material-icons">apps</span></div>
@@ -504,6 +509,23 @@
                 <div class="list-row"><div class="list-text-container"><div class="list-label">データの削除</div><div class="list-value">現在利用可能なオプションはありません</div></div></div>
                 <div class="list-row"><div class="list-text-container"><div class="list-label">アカウントの停止</div><div class="list-value">管理者に問い合わせてください</div></div></div>
             </div>
+        </div>
+    </div>
+
+    <div id="page-loginMethods" class="page-container">
+        <div class="page-header"><button class="back-btn" onclick="closePage('loginMethods')"><span class="material-icons">arrow_back</span></button><div class="page-title">ログイン方法</div></div>
+        <div class="content-area">
+            <div class="info-card">
+                <div class="list-row" id="btn-google-login" style="cursor: pointer;">
+                    <span class="material-icons row-icon">add_link</span>
+                    <div class="list-text-container">
+                        <div class="list-label">Googleアカウント</div>
+                        <div class="list-value" id="google-status-text">未連携</div>
+                    </div>
+                    <span class="material-icons" style="color:#ccc;">chevron_right</span>
+                </div>
+            </div>
+            <div class="section-subtext">Googleアカウントを連携すると、LINE以外からもログインできるようになります（実装予定）。</div>
         </div>
     </div>
 
@@ -571,6 +593,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, linkWithCredential } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -584,6 +607,7 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
         const MY_LIFF_ID = "2008162165-znd24peg"; 
 
@@ -692,6 +716,11 @@
                     if(!data.affiliations && data.org) data.affiliations = [data.org];
                     if(!data.affiliations) data.affiliations = [];
                     
+                    if(data.googleLinked) {
+                        document.getElementById('google-status-text').innerText = "連携済み: " + (data.googleEmail || "Googleアカウント");
+                        document.getElementById('google-status-text').style.color = "#34a853";
+                    }
+
                     if (data.isNewUser) {
                         // Show Welcome for new user
                         const overlay = document.getElementById('welcomeOverlay');
@@ -779,6 +808,32 @@
                     }
                     location.reload();
                 });
+
+                // Googleログインボタンの処理
+                document.getElementById('btn-google-login').addEventListener('click', async () => {
+                    const provider = new GoogleAuthProvider();
+                    try {
+                        const result = await signInWithPopup(auth, provider);
+                        const user = result.user;
+                        
+                        alert(`Googleアカウント (${user.email}) と連携しました！`);
+                        
+                        document.getElementById('google-status-text').innerText = "連携済み: " + user.email;
+                        document.getElementById('google-status-text').style.color = "#34a853";
+
+                        // Firestoreに連携情報を保存
+                        await setDoc(userRef, { 
+                            googleLinked: true,
+                            googleUid: user.uid,
+                            googleEmail: user.email
+                        }, { merge: true });
+
+                    } catch (error) {
+                        console.error(error);
+                        alert("連携に失敗しました: " + error.message);
+                    }
+                });
+
             } catch(err) { console.error(err); }
         }
 
