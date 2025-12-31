@@ -230,58 +230,153 @@
         .qr-section { margin-top: 30px; text-align: center; }
         .qr-image { width: 160px; height: 160px; mix-blend-mode: multiply; }
         
-        /* ログイン */
+        /* --- ログイン・新規登録 (デザイン修正版) --- */
         .center-screen {
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            height: 100vh; padding: 20px; box-sizing: border-box; background: #fff;
+            min-height: 100vh; padding: 20px; box-sizing: border-box;
+            background-color: rgb(241, 244, 249); /* 背景色をメインと統一 */
         }
+
+        .auth-card {
+            background: #ffffff;
+            padding: 40px 32px;
+            border-radius: 28px; /* ダッシュボードのカードと同じ角丸 */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .brand-logo {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-size: 24px; font-weight: 500; color: #5f6368;
+            margin-bottom: 8px;
+        }
+        .logo-svg {
+            width: 24px; height: 24px; /* サイズを小さく修正 */
+        }
+        
+        .auth-title {
+            font-size: 22px; color: #1f1f1f; margin-bottom: 12px;
+        }
+        .auth-desc {
+            font-size: 14px; color: #444746; margin-bottom: 32px; line-height: 1.5;
+        }
+
         .input-group { width: 100%; margin-bottom: 20px; text-align: left; }
-        label { display: block; font-size: 12px; color: #5f6368; margin-bottom: 8px; }
+        .input-group label { display: block; font-size: 12px; color: #1f1f1f; margin-bottom: 8px; font-weight: 500; }
+        
+        /* 入力フォームのデザイン修正 */
         input, select {
-            width: 100%; padding: 13px 15px; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; box-sizing: border-box; background:white;
+            width: 100%; padding: 16px; 
+            border: 1px solid #747775; border-radius: 4px; 
+            font-size: 16px; box-sizing: border-box; background: white;
+            transition: border-color 0.2s;
+            border-radius: 8px; /* 角を少し丸く */
         }
+        input:focus, select:focus {
+            outline: none; border: 2px solid #0b57d0; padding: 15px; /* borderが増えた分paddingを減らす */
+        }
+
+        /* ボタンのデザイン修正 */
         button {
-            width: 100%; padding: 12px; border: none; border-radius: 4px;
-            background-color: #0b57d0; color: white; font-weight: 500; cursor: pointer;
+            width: 100%; padding: 14px; border: none; 
+            border-radius: 24px; /* 丸みを帯びたボタン */
+            background-color: #0b57d0; color: white; 
+            font-weight: 500; font-size: 14px; cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
         }
-        button.secondary { background: white; color: #0b57d0; border: 1px solid #dadce0; margin-top: 10px; }
+        button:active { transform: scale(0.98); background-color: #0842a0; }
+
+        button.secondary {
+            background: transparent; color: #0b57d0; 
+            border: 1px solid #747775; margin-top: 12px;
+        }
+        button.secondary:active { background-color: rgba(11, 87, 208, 0.08); }
+
         button.admin-save { background-color: #c2185b; }
         
-        .error { color: #d93025; font-size: 12px; margin-top: 5px; }
+        .error { color: #b3261e; font-size: 12px; margin-top: 6px; text-align: left; display: flex; align-items: center; gap: 4px; }
         .hidden { display: none !important; }
-        .job-badge { font-size: 11px; font-weight: bold; padding: 4px 12px; border-radius: 20px; background-color: #f1f3f4; color: #5f6368; }
+        
+        .job-badge { 
+            font-size: 12px; font-weight: 500; padding: 6px 16px; 
+            border-radius: 16px; background-color: #e8f0fe; color: #1967d2; 
+            display: inline-block; margin-bottom: 20px;
+        }
+
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
     <div id="authContainer" class="center-screen hidden">
-        <h2 style="margin-bottom: 20px;">G-Member Login</h2>
-        <div id="nameForm" class="hidden" style="width:100%; max-width:320px;">
-            <p>裏方部の方は名簿の氏名を、<br>LMCの方は「新規登録」を選択してください。</p>
-            <div class="input-group"><input type="text" id="inputSearchName" placeholder="氏名を入力"><div id="nameError" class="error"></div></div>
-            <button id="checkNameBtn">確認する</button>
-            <button id="lmcRegisterBtn" class="secondary">LMCとして新規登録</button>
-        </div>
-        <div id="registerForm" class="hidden" style="width:100%; max-width:320px;">
-            <div style="text-align:center; margin-bottom:15px;"><span id="targetOrgBadge" class="job-badge"></span></div>
-            <div class="input-group"><label>氏名</label><input type="text" id="regName"></div>
-            <div class="input-group"><label>ふりがな</label><input type="text" id="regKana"></div>
-            <div class="input-group"><label>学籍番号</label><input type="text" id="regStudentId" placeholder="例: 2024001"></div>
-            <div class="input-group">
-                <label>担当パート (LMC用)</label>
-                <select id="regPart">
-                    <option value="">なし</option>
-                    <option value="vocal">ボーカル</option>
-                    <option value="guitar">ギター</option>
-                    <option value="bass">ベース</option>
-                    <option value="drums">ドラム</option>
-                    <option value="keyboard">キーボード</option>
-                </select>
+        <div class="auth-card">
+            <div class="brand-logo">
+                <svg class="logo-svg" viewBox="0 0 1500 1500" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M718.92,1372.735c0,42.176-6.27,82.165-6.27,82.165c-3.522,22.465-25.011,40.848-47.752,40.848H41.869 c-22.742,0-41.349-18.607-41.349-41.35V827.587c0-22.742,10.398-43.149,23.106-45.35c2.449-0.425,6.394-0.906,11.316-1.406 c2.065-0.688,4.167-1.275,6.321-1.648c0,0,5.466-0.946,29.199-2.889c16.457-1.363,33.122-2.068,49.95-2.068 c16.831,0,33.493,0.705,49.95,2.068C477.544,801.663,718.92,1059.017,718.92,1372.735z M1449.25,776.299H812.509 c-22.743,0-41.35,18.608-41.35,41.35v636.74c0,22.744,18.606,41.35,41.35,41.35h636.741c22.745,0,41.352-18.605,41.352-41.35 v-636.74C1490.602,794.908,1471.995,776.299,1449.25,776.299z M813.029,721.522h623.027c22.74,0,44.23-18.385,47.754-40.853 c0,0,6.27-39.984,6.27-82.161c0-313.716-241.376-571.074-548.556-596.441C925.063,0.704,908.403,0,891.573,0 s-33.494,0.704-49.951,2.068c-23.734,1.943-29.198,2.888-29.198,2.888c-22.407,3.881-40.742,25.663-40.742,48.406v626.812 C771.682,702.915,790.288,721.522,813.029,721.522z M678.091,7.207H41.348C18.607,7.207,0,25.814,0,48.556v636.742 c0,22.742,18.607,41.349,41.348,41.349h636.743c22.743,0,41.35-18.607,41.35-41.349V48.556 C719.441,25.814,700.834,7.207,678.091,7.207z" style="fill: rgb(92, 106, 140);"/>
+                </svg>
+                <span>Account</span>
             </div>
-            <div class="input-group"><label>生年月日</label><input type="date" id="regBirthday"><div id="regError" class="error"></div></div>
-            <button id="commitBtn">登録完了</button>
-            <button id="backBtn" class="secondary">戻る</button>
+            
+            <!-- 名前検索フォーム -->
+            <div id="nameForm" class="hidden" style="width:100%;">
+                <div class="auth-title">ログイン</div>
+                <div class="auth-desc">裏方部の方は名簿の氏名を検索してください。<br>LMCの方は「新規登録」へ進んでください。</div>
+                
+                <div class="input-group">
+                    <input type="text" id="inputSearchName" placeholder="氏名を入力">
+                    <div id="nameError" class="error"></div>
+                </div>
+                
+                <button id="checkNameBtn">確認する</button>
+                <button id="lmcRegisterBtn" class="secondary">LMCとして新規登録</button>
+            </div>
+
+            <!-- 詳細登録フォーム -->
+            <div id="registerForm" class="hidden" style="width:100%;">
+                <div class="auth-title">アカウント登録</div>
+                <div style="text-align:center;"><span id="targetOrgBadge" class="job-badge"></span></div>
+                
+                <div class="input-group">
+                    <label>氏名</label>
+                    <input type="text" id="regName">
+                </div>
+                <div class="input-group">
+                    <label>ふりがな</label>
+                    <input type="text" id="regKana">
+                </div>
+                <div class="input-group">
+                    <label>学籍番号</label>
+                    <input type="text" id="regStudentId" placeholder="例: 2024001">
+                </div>
+                
+                <div class="input-group">
+                    <label>担当パート (LMC用)</label>
+                    <select id="regPart">
+                        <option value="">なし</option>
+                        <option value="vocal">ボーカル</option>
+                        <option value="guitar">ギター</option>
+                        <option value="bass">ベース</option>
+                        <option value="drums">ドラム</option>
+                        <option value="keyboard">キーボード</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>生年月日</label>
+                    <input type="date" id="regBirthday">
+                    <div id="regError" class="error"></div>
+                </div>
+                
+                <button id="commitBtn">登録完了</button>
+                <button id="backBtn" class="secondary">戻る</button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 24px; font-size: 12px; color: #5f6368;">
+            Aichi Gakuin University Backstage Club
         </div>
     </div>
 
@@ -387,7 +482,12 @@
         <div class="page-header"><button class="back-btn" onclick="closePage('memberCard')"><span class="material-icons">arrow_back</span></button><div class="page-title">会員証</div></div>
         <div class="content-area">
             <div class="member-card">
-                <div style="font-weight:bold; font-size:20px; color:#5f6368; margin-bottom:20px;"><span style="color:#4285f4;">G</span>Member</div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:8px; font-weight:500; font-size:20px; color:#5f6368; margin-bottom:20px;">
+                    <svg class="logo-svg" viewBox="0 0 1500 1500" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M718.92,1372.735c0,42.176-6.27,82.165-6.27,82.165c-3.522,22.465-25.011,40.848-47.752,40.848H41.869 c-22.742,0-41.349-18.607-41.349-41.35V827.587c0-22.742,10.398-43.149,23.106-45.35c2.449-0.425,6.394-0.906,11.316-1.406 c2.065-0.688,4.167-1.275,6.321-1.648c0,0,5.466-0.946,29.199-2.889c16.457-1.363,33.122-2.068,49.95-2.068 c16.831,0,33.493,0.705,49.95,2.068C477.544,801.663,718.92,1059.017,718.92,1372.735z M1449.25,776.299H812.509 c-22.743,0-41.35,18.608-41.35,41.35v636.74c0,22.744,18.606,41.35,41.35,41.35h636.741c22.745,0,41.352-18.605,41.352-41.35 v-636.74C1490.602,794.908,1471.995,776.299,1449.25,776.299z M813.029,721.522h623.027c22.74,0,44.23-18.385,47.754-40.853 c0,0,6.27-39.984,6.27-82.161c0-313.716-241.376-571.074-548.556-596.441C925.063,0.704,908.403,0,891.573,0 s-33.494,0.704-49.951,2.068c-23.734,1.943-29.198,2.888-29.198,2.888c-22.407,3.881-40.742,25.663-40.742,48.406v626.812 C771.682,702.915,790.288,721.522,813.029,721.522z M678.091,7.207H41.348C18.607,7.207,0,25.814,0,48.556v636.742 c0,22.742,18.607,41.349,41.348,41.349h636.743c22.743,0,41.35-18.607,41.35-41.349V48.556 C719.441,25.814,700.834,7.207,678.091,7.207z" style="fill: rgb(92, 106, 140);"/>
+                    </svg>
+                    <span>Account</span>
+                </div>
                 <div class="anim-header">
                     <div id="cardIconWrapper" class="anim-icon"><img id="cardIcon" src="" class="profile-icon"></div>
                     <div class="anim-text">
