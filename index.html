@@ -691,9 +691,27 @@
                     const data = userSnap.data();
                     if(!data.affiliations && data.org) data.affiliations = [data.org];
                     if(!data.affiliations) data.affiliations = [];
-                    await setDoc(userRef, { lastLogin: serverTimestamp(), icon: profile.pictureUrl }, { merge: true });
-                    data.icon = profile.pictureUrl;
-                    renderDashboard(data, userSnap.id);
+                    
+                    if (data.isNewUser) {
+                        // Show Welcome for new user
+                        const overlay = document.getElementById('welcomeOverlay');
+                        const namePlace = document.getElementById('welcomeNamePlaceholder');
+                        namePlace.innerText = data.name + " さん";
+                        overlay.classList.remove('hidden');
+
+                        // Update DB to remove flag
+                        await setDoc(userRef, { lastLogin: serverTimestamp(), icon: profile.pictureUrl, isNewUser: false }, { merge: true });
+                        data.icon = profile.pictureUrl;
+
+                        setTimeout(() => {
+                            overlay.classList.add('hidden');
+                            renderDashboard(data, userSnap.id);
+                        }, 2500);
+                    } else {
+                        await setDoc(userRef, { lastLogin: serverTimestamp(), icon: profile.pictureUrl }, { merge: true });
+                        data.icon = profile.pictureUrl;
+                        renderDashboard(data, userSnap.id);
+                    }
                 } else {
                     document.getElementById("authContainer").classList.remove("hidden");
                     document.getElementById("nameForm").classList.remove("hidden");
@@ -709,7 +727,7 @@
                         foundMasterDoc = qs.docs[0];
                         registerMode = "urakata";
                         
-                        // アニメーション表示
+                        // アニメーション表示 (名簿発見時)
                         const overlay = document.getElementById('welcomeOverlay');
                         const namePlace = document.getElementById('welcomeNamePlaceholder');
                         namePlace.innerText = foundMasterDoc.data().name + " さん";
@@ -753,6 +771,7 @@
                         lineUserId: profile.userId, lineDisplayName: profile.displayName, icon: profile.pictureUrl,
                         name: name, kana: kana, studentId: sId || "未設定", birthday: bday,
                         role: "", affiliations: initialAffiliations, job: job, part: part,
+                        isNewUser: true, // 新規ユーザーフラグを設定
                         createdAt: serverTimestamp(), lastLogin: serverTimestamp()
                     });
                     if (registerMode === "urakata" && foundMasterDoc) {
