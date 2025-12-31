@@ -816,17 +816,29 @@
                         const result = await signInWithPopup(auth, provider);
                         const user = result.user;
                         
-                        alert(`Googleアカウント (${user.email}) と連携しました！`);
+                        alert(`Googleアカウント (${user.email}) と連携しました！\nこんにちは、${user.displayName}さん。`);
                         
                         document.getElementById('google-status-text').innerText = "連携済み: " + user.email;
                         document.getElementById('google-status-text').style.color = "#34a853";
 
                         // Firestoreに連携情報を保存
-                        await setDoc(userRef, { 
+                        // Googleのアイコン画像や名前も保存しておくと便利です
+                        const updateData = { 
                             googleLinked: true,
                             googleUid: user.uid,
-                            googleEmail: user.email
-                        }, { merge: true });
+                            googleEmail: user.email,
+                            googleDisplayName: user.displayName,
+                            googlePhotoURL: user.photoURL
+                        };
+
+                        // もし現在のアイコンがなければ、Googleのアイコンを設定する
+                        if (!document.getElementById("myIcon").src || document.getElementById("myIcon").src.includes("placehold.jp")) {
+                             updateData.icon = user.photoURL;
+                             document.getElementById("myIcon").src = user.photoURL;
+                             document.getElementById("cardIcon").src = user.photoURL;
+                        }
+
+                        await setDoc(userRef, updateData, { merge: true });
 
                     } catch (error) {
                         console.error(error);
