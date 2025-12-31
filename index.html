@@ -306,10 +306,46 @@
             display: inline-block; margin-bottom: 20px;
         }
 
+        /* Welcome Animation Styles */
+        .welcome-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: white; z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column;
+        }
+        .welcome-content {
+            text-align: center;
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .welcome-icon-wrapper {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: #e8f0fe; color: #1a73e8;
+            display: flex; justify-content: center; align-items: center;
+            margin: 0 auto 20px;
+        }
+        .welcome-icon { font-size: 40px; }
+        .welcome-title { font-size: 28px; font-weight: bold; color: #1f1f1f; margin-bottom: 8px; }
+        .welcome-text { font-size: 18px; color: #444746; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <div id="welcomeOverlay" class="welcome-overlay hidden">
+        <div class="welcome-content">
+            <div class="welcome-icon-wrapper">
+                <span class="material-icons welcome-icon">celebration</span>
+            </div>
+            <div class="welcome-title">Welcome!</div>
+            <div class="welcome-text" id="welcomeNamePlaceholder"></div>
+        </div>
+    </div>
 
     <div id="authContainer" class="center-screen hidden">
         <div class="auth-card">
@@ -672,7 +708,19 @@
                         if (qs.empty) throw new Error("名簿に見つかりません。");
                         foundMasterDoc = qs.docs[0];
                         registerMode = "urakata";
-                        showRegisterForm(foundMasterDoc.data().name, foundMasterDoc.data().kana, foundMasterDoc.data().studentId, true, foundMasterDoc.data().job);
+                        
+                        // アニメーション表示
+                        const overlay = document.getElementById('welcomeOverlay');
+                        const namePlace = document.getElementById('welcomeNamePlaceholder');
+                        namePlace.innerText = foundMasterDoc.data().name + " さん";
+                        overlay.classList.remove('hidden');
+
+                        // 2秒後にフォームへ
+                        setTimeout(() => {
+                            overlay.classList.add('hidden');
+                            showRegisterForm(foundMasterDoc.data().name, foundMasterDoc.data().kana, foundMasterDoc.data().studentId, true, foundMasterDoc.data().job);
+                        }, 2000);
+
                     } catch (e) { document.getElementById("nameError").innerText = e.message; }
                 });
 
@@ -763,7 +811,7 @@
             document.getElementById("displayName").innerText = data.lineDisplayName;
             document.getElementById("roleText").innerText = data.role || "";
 
-            if(isUrakata && data.role) document.getElementById("btn-admin").classList.remove("hidden");
+            if(data.role) document.getElementById("btn-admin").classList.remove("hidden");
             else document.getElementById("btn-admin").classList.add("hidden");
 
             document.getElementById("showName").innerText = data.name;
@@ -809,7 +857,7 @@
             else if(ringClass) cardIconWrapper.classList.add(ringClass);
             
             document.getElementById("cardIcon").src = data.icon || "https://placehold.jp/80x80.png?text=No+Img";
-            document.getElementById("cardName").innerText = data.name;
+            document.getElementById("cardName").innerText = data.name + " さん";
             const cardRoleBadge = document.getElementById("cardRoleBadge");
             if(data.role) {
                 cardRoleBadge.innerText = data.role;
