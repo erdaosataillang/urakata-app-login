@@ -582,6 +582,12 @@
                         <label class="checkbox-label"><input type="checkbox" id="check-lmc" value="lmc"> LMC</label>
                     </div>
                 </div>
+                <!-- 旧ID入力欄 (裏方のみ表示) -->
+                <div id="group-oldId" class="edit-form-group hidden">
+                    <label class="edit-label">旧ID (数字)</label>
+                    <input type="text" id="edit-oldId" class="edit-input" placeholder="例: 12345">
+                </div>
+
                 <div class="edit-form-group"><label class="edit-label">担当区分 (job: 裏方)</label><select id="edit-job" class="edit-select"><option value="">なし</option><option value="sound">音響</option><option value="light">照明</option><option value="stage">舞台</option><option value="video">映像・カメラマン</option></select></div>
                 <div class="edit-form-group"><label class="edit-label">担当パート (part: LMC)</label><select id="edit-part" class="edit-select"><option value="">なし</option><option value="vocal">ボーカル</option><option value="guitar">ギター</option><option value="bass">ベース</option><option value="drums">ドラム</option><option value="keyboard">キーボード</option></select></div>
                 <div class="edit-form-group"><label class="edit-label">役職 (role)</label><input type="text" id="edit-role" class="edit-input" placeholder="例: 部長, チーフ"></div>
@@ -659,6 +665,13 @@
             renderAdminList(term ? allUsersCache.filter(u => u.name.includes(term) || (u.kana && u.kana.includes(term))) : allUsersCache);
         });
 
+        // 裏方チェックボックスの変更監視
+        document.getElementById('check-urakata').addEventListener('change', (e) => {
+            const el = document.getElementById('group-oldId');
+            if(e.target.checked) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        });
+
         let editingUserId = null;
         function openAdminEdit(user) {
             editingUserId = user.id;
@@ -672,9 +685,17 @@
             document.getElementById('edit-role').value = user.role || "";
             document.getElementById('edit-job').value = user.job || "";
             document.getElementById('edit-part').value = user.part || "";
+            document.getElementById('edit-oldId').value = user.oldId || ""; // 旧IDをセット
+
             const affs = user.affiliations || [];
-            document.getElementById('check-urakata').checked = affs.includes('urakata');
+            const isUrakata = affs.includes('urakata');
+            document.getElementById('check-urakata').checked = isUrakata;
             document.getElementById('check-lmc').checked = affs.includes('lmc');
+
+            // 裏方なら旧ID欄を表示
+            const oldIdGroup = document.getElementById('group-oldId');
+            if(isUrakata) oldIdGroup.classList.remove('hidden');
+            else oldIdGroup.classList.add('hidden');
         }
 
         document.getElementById('btn-save-user').addEventListener('click', async () => {
@@ -693,7 +714,8 @@
                     affiliations: newAffiliations,
                     job: document.getElementById('edit-job').value,
                     part: document.getElementById('edit-part').value, 
-                    role: document.getElementById('edit-role').value
+                    role: document.getElementById('edit-role').value,
+                    oldId: document.getElementById('edit-oldId').value // 旧IDを保存
                 };
                 await updateDoc(doc(db, "users", editingUserId), newData);
                 alert("保存しました");
