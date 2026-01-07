@@ -655,7 +655,9 @@
                 if(u.affiliations.includes('lmc')) badges += '<span style="color:#5f6368; font-size:10px;">●LMC</span>';
                 let roleHtml = u.role ? `<span style="font-size:10px; background:#e0e3e7; padding:2px 6px; border-radius:10px; margin-left:5px;">${u.role}</span>` : '';
 
-                div.innerHTML = `<img src="${u.icon || 'https://placehold.jp/40x40.png'}" class="mini-icon"><div class="user-info-main"><div class="user-name">${u.name} ${roleHtml}</div><div class="user-sub">${badges}</div></div><span class="material-icons" style="color:#ccc;">chevron_right</span>`;
+                // アイコンがない場合のフォールバック
+                const iconSrc = u.icon || 'https://placehold.jp/40x40.png?text=No+Img';
+                div.innerHTML = `<img src="${iconSrc}" class="mini-icon"><div class="user-info-main"><div class="user-name">${u.name} ${roleHtml}</div><div class="user-sub">${badges}</div></div><span class="material-icons" style="color:#ccc;">chevron_right</span>`;
                 container.appendChild(div);
             });
         }
@@ -730,6 +732,13 @@
                 await liff.init({ liffId: MY_LIFF_ID });
                 if (!liff.isLoggedIn()) { liff.login(); return; }
                 const profile = await liff.getProfile();
+                
+                // --- バグ対策: undefined回避 ---
+                // アイコン未設定や名前空欄の場合に初期値を設定
+                const pUrl = profile.pictureUrl || ""; // 画像がない場合は空文字
+                const pName = profile.displayName || "No Name"; // 名前がない場合は代替テキスト
+                // -----------------------------
+
                 const userRef = doc(db, "users", profile.userId);
                 const userSnap = await getDoc(userRef);
 
@@ -750,17 +759,18 @@
                         namePlace.innerText = data.name + " さん";
                         overlay.classList.remove('hidden');
 
-                        // Update DB to remove flag
-                        await setDoc(userRef, { lastLogin: serverTimestamp(), icon: profile.pictureUrl, isNewUser: false }, { merge: true });
-                        data.icon = profile.pictureUrl;
+                        // Update DB to remove flag (アイコン等の更新もここで行う)
+                        await setDoc(userRef, { lastLogin: serverTimestamp(), icon: pUrl, lineDisplayName: pName, isNewUser: false }, { merge: true });
+                        data.icon = pUrl; // ローカルデータも更新
 
                         setTimeout(() => {
                             overlay.classList.add('hidden');
                             renderDashboard(data, userSnap.id);
                         }, 2500);
                     } else {
-                        await setDoc(userRef, { lastLogin: serverTimestamp(), icon: profile.pictureUrl }, { merge: true });
-                        data.icon = profile.pictureUrl;
+                        // 通常ログイン時も最新のアイコン情報を更新
+                        await setDoc(userRef, { lastLogin: serverTimestamp(), icon: pUrl, lineDisplayName: pName }, { merge: true });
+                        data.icon = pUrl;
                         renderDashboard(data, userSnap.id);
                     }
                 } else {
@@ -819,7 +829,9 @@
                     else initialAffiliations = ["lmc"];
 
                     await setDoc(userRef, {
-                        lineUserId: profile.userId, lineDisplayName: profile.displayName, icon: profile.pictureUrl,
+                        lineUserId: profile.userId, 
+                        lineDisplayName: pName, // 対策済み変数を使用
+                        icon: pUrl,             // 対策済み変数を使用
                         name: name, kana: kana, studentId: sId || "未設定", birthday: bday,
                         role: "", affiliations: initialAffiliations, job: job, part: part,
                         isNewUser: true, // 新規ユーザーフラグを設定
@@ -855,9 +867,13 @@
 
                         // もし現在のアイコンがなければ、Googleのアイコンを設定する
                         if (!document.getElementById("myIcon").src || document.getElementById("myIcon").src.includes("placehold.jp")) {
-                             updateData.icon = user.photoURL;
-                             document.getElementById("myIcon").src = user.photoURL;
-                             document.getElementById("cardIcon").src = user.photoURL;
+                             // GoogleのアイコンURLもundefinedの可能性があるので念のためチェック
+                             const gPhoto = user.photoURL || ""; 
+                             if(gPhoto) {
+                                 updateData.icon = gPhoto;
+                                 document.getElementById("myIcon").src = gPhoto;
+                                 document.getElementById("cardIcon").src = gPhoto;
+                             }
                         }
 
                         await setDoc(userRef, updateData, { merge: true });
