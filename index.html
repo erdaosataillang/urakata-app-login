@@ -479,8 +479,10 @@
                 <div class="list-row"><span class="material-icons row-icon">badge</span><div class="list-text-container"><div class="list-label">氏名</div><div id="showName" class="list-value"></div></div></div>
                 <div class="list-row"><span class="material-icons row-icon">text_format</span><div class="list-text-container"><div class="list-label">ふりがな</div><div id="showKana" class="list-value"></div></div></div>
                 <div class="list-row"><span class="material-icons row-icon">school</span><div class="list-text-container"><div class="list-label">学籍番号</div><div id="showStudentId" class="list-value"></div></div></div>
+                <div class="list-row"><span class="material-icons row-icon">menu_book</span><div class="list-text-container"><div class="list-label">学年</div><div id="showYear" class="list-value"></div></div></div>
                 <div class="list-row"><span class="material-icons row-icon">diversity_3</span><div class="list-text-container"><div class="list-label">所属サークル</div><div id="showOrg" class="list-value"></div></div></div>
                 <div class="list-row"><span class="material-icons row-icon">celebration</span><div class="list-text-container"><div class="list-label">生年月日</div><div id="showBirthday" class="list-value"></div></div></div>
+                <div id="row-tel" class="list-row hidden"><span class="material-icons row-icon">phone</span><div class="list-text-container"><div class="list-label">電話番号</div><div id="showTel" class="list-value"></div></div></div>
             </div>
             <div class="info-card">
                 <div id="row-job" class="list-row"><span class="material-icons row-icon">work_outline</span><div class="list-text-container"><div class="list-label">担当区分 (裏方)</div><div id="showJob" class="list-value"></div></div></div>
@@ -941,6 +943,7 @@
             document.getElementById("showName").innerText = data.name;
             document.getElementById("showKana").innerText = data.kana || "-";
             document.getElementById("showStudentId").innerText = data.studentId || "-";
+            document.getElementById("showYear").innerText = data.year ? data.year + "年" : "-";
             
             let orgText = "";
             if(isUrakata) orgText += "裏方部";
@@ -949,6 +952,23 @@
             document.getElementById("showOrg").innerText = orgText;
 
             document.getElementById("showBirthday").innerText = data.birthday || "未設定";
+
+            // 電話番号の表示処理
+            const rowTel = document.getElementById("row-tel");
+            if (data.tel) {
+                let displayTel = String(data.tel);
+                // 11桁または10桁の数字のみの場合、簡易的にハイフンを挿入
+                if (/^\d{11}$/.test(displayTel)) {
+                    displayTel = displayTel.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+                } else if (/^\d{10}$/.test(displayTel)) {
+                    // 固定電話などの場合（簡易フォーマット）
+                    displayTel = displayTel.replace(/(\d{2,3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+                }
+                document.getElementById("showTel").innerText = displayTel;
+                rowTel.classList.remove("hidden");
+            } else {
+                rowTel.classList.add("hidden");
+            }
 
             const rowJob = document.getElementById("row-job");
             if (isUrakata) {
