@@ -192,15 +192,43 @@
         .user-name { font-size: 16px; font-weight: bold; color: #1f1f1f; }
         .user-sub { font-size: 12px; color: #5f6368; }
         
-        .edit-form-group { margin-bottom: 20px; }
-        .edit-label { font-size: 12px; color: #5f6368; margin-bottom: 6px; display: block; }
-        .edit-input, .edit-select {
-            width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 8px;
-            font-size: 16px; box-sizing: border-box; background: white;
+        /* ユーザー編集フォームのモダン化 */
+        .edit-form-group { 
+            margin-bottom: 16px; 
+            background: #f1f4f9; 
+            border-radius: 8px 8px 0 0; 
+            padding: 8px 16px 8px; 
+            border-bottom: 2px solid #c4c7c5;
+            transition: background-color 0.2s, border-bottom-color 0.2s;
         }
-        .checkbox-group { display: flex; gap: 15px; flex-wrap: wrap; padding: 8px 0; }
-        .checkbox-label { display: flex; align-items: center; font-size: 16px; cursor: pointer; }
-        .checkbox-label input { width: 20px; height: 20px; margin-right: 8px; }
+        .edit-form-group:focus-within {
+            background: #e8eaed;
+            border-bottom-color: #0b57d0;
+        }
+        .edit-label { 
+            font-size: 12px; color: #444746; display: block; 
+        }
+        .edit-input, .edit-select {
+            width: 100%; padding: 4px 0; border: none; 
+            font-size: 16px; box-sizing: border-box; background: transparent;
+            color: #1f1f1f; outline: none;
+        }
+        
+        .checkbox-wrapper {
+            background: white; border-radius: 12px; padding: 16px;
+            border: 1px solid #dadce0; margin-bottom: 16px;
+        }
+        .checkbox-wrapper .edit-label { font-size: 14px; font-weight: 500; margin-bottom: 12px; color: #1f1f1f; }
+        .checkbox-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        .checkbox-label { display: flex; align-items: center; font-size: 16px; cursor: pointer; color: #444746; }
+        .checkbox-label input { width: 22px; height: 22px; margin-right: 8px; accent-color: #0b57d0; }
+        
+        .admin-save-btn {
+            width: 100%; padding: 14px; border: none; border-radius: 24px;
+            background-color: #0b57d0; color: white; font-weight: 500; font-size: 14px;
+            cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 8px;
+        }
+        .admin-save-btn:active { transform: scale(0.98); background-color: #0842a0; }
 
         /* 会員証アニメ */
         .member-card {
@@ -572,32 +600,39 @@
     <div id="page-admin-edit" class="page-container">
         <div class="page-header"><button class="back-btn" onclick="closePage('admin-edit')"><span class="material-icons">arrow_back</span></button><div class="page-title">ユーザー編集</div></div>
         <div class="content-area">
-            <div style="text-align:center; margin-bottom:20px;"><img id="edit-icon" src="" style="width:80px; height:80px; border-radius:50%; object-fit:cover;"><div id="edit-lineName" style="font-size:14px; color:#5f6368; margin-top:8px;"></div></div>
-            <div class="info-card" style="padding:20px;">
+            <div style="text-align:center; margin-bottom:24px; margin-top:16px;">
+                <img id="edit-icon" src="" style="width:88px; height:88px; border-radius:50%; object-fit:cover; border: 4px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                <div id="edit-lineName" style="font-size:16px; font-weight:500; color:#1f1f1f; margin-top:12px;"></div>
+                <div style="font-size:12px; color:#5f6368; margin-top:4px;">ID: <span id="edit-docId"></span></div>
+            </div>
+            
+            <div style="background: white; border-radius: 24px; padding: 24px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                 <div class="edit-form-group"><label class="edit-label">氏名</label><input type="text" id="edit-name" class="edit-input"></div>
                 <div class="edit-form-group"><label class="edit-label">ふりがな</label><input type="text" id="edit-kana" class="edit-input"></div>
                 <div class="edit-form-group"><label class="edit-label">学籍番号</label><input type="text" id="edit-studentId" class="edit-input"></div>
                 <div class="edit-form-group"><label class="edit-label">学年</label><input type="number" id="edit-year" class="edit-input" placeholder="例: 1"></div>
                 <div class="edit-form-group"><label class="edit-label">電話番号</label><input type="tel" id="edit-tel" class="edit-input" placeholder="ハイフンなし"></div>
-                <div class="edit-form-group">
+                
+                <div class="checkbox-wrapper">
                     <label class="edit-label">所属 (複数選択可)</label>
                     <div class="checkbox-group">
                         <label class="checkbox-label"><input type="checkbox" id="check-urakata" value="urakata"> 裏方部</label>
                         <label class="checkbox-label"><input type="checkbox" id="check-lmc" value="lmc"> LMC</label>
                     </div>
                 </div>
+
                 <!-- 旧ID入力欄 (裏方のみ表示) -->
                 <div id="group-oldId" class="edit-form-group hidden">
                     <label class="edit-label">旧ID (数字)</label>
                     <input type="text" id="edit-oldId" class="edit-input" placeholder="例: 12345">
                 </div>
 
-                <div class="edit-form-group"><label class="edit-label">担当区分 (job: 裏方)</label><select id="edit-job" class="edit-select"><option value="">なし</option><option value="sound">音響</option><option value="light">照明</option><option value="stage">舞台</option><option value="video">映像・カメラマン</option></select></div>
-                <div class="edit-form-group"><label class="edit-label">担当パート (part: LMC)</label><select id="edit-part" class="edit-select"><option value="">なし</option><option value="vocal">ボーカル</option><option value="guitar">ギター</option><option value="bass">ベース</option><option value="drums">ドラム</option><option value="keyboard">キーボード</option></select></div>
-                <div class="edit-form-group"><label class="edit-label">役職 (role)</label><input type="text" id="edit-role" class="edit-input" placeholder="例: 部長, チーフ"></div>
-                <button id="btn-save-user" class="admin-save" style="width:100%; color:white; border:none; padding:15px; border-radius:8px; font-weight:bold;">変更を保存</button>
+                <div class="edit-form-group"><label class="edit-label">担当区分 (裏方)</label><select id="edit-job" class="edit-select"><option value="">なし</option><option value="sound">音響</option><option value="light">照明</option><option value="stage">舞台</option><option value="video">映像・カメラマン</option></select></div>
+                <div class="edit-form-group"><label class="edit-label">担当パート (LMC)</label><select id="edit-part" class="edit-select"><option value="">なし</option><option value="vocal">ボーカル</option><option value="guitar">ギター</option><option value="bass">ベース</option><option value="drums">ドラム</option><option value="keyboard">キーボード</option></select></div>
+                <div class="edit-form-group"><label class="edit-label">役職</label><input type="text" id="edit-role" class="edit-input" placeholder="例: 部長, チーフ"></div>
+                
+                <button id="btn-save-user" class="admin-save-btn">変更を保存</button>
             </div>
-            <div style="font-size:10px; color:#999; text-align:center; margin-top:20px;">USER ID: <span id="edit-docId"></span></div>
         </div>
     </div>
 
