@@ -577,6 +577,8 @@
                 <div class="edit-form-group"><label class="edit-label">氏名</label><input type="text" id="edit-name" class="edit-input"></div>
                 <div class="edit-form-group"><label class="edit-label">ふりがな</label><input type="text" id="edit-kana" class="edit-input"></div>
                 <div class="edit-form-group"><label class="edit-label">学籍番号</label><input type="text" id="edit-studentId" class="edit-input"></div>
+                <div class="edit-form-group"><label class="edit-label">学年</label><input type="number" id="edit-year" class="edit-input" placeholder="例: 1"></div>
+                <div class="edit-form-group"><label class="edit-label">電話番号</label><input type="tel" id="edit-tel" class="edit-input" placeholder="ハイフンなし"></div>
                 <div class="edit-form-group">
                     <label class="edit-label">所属 (複数選択可)</label>
                     <div class="checkbox-group">
@@ -686,6 +688,8 @@
             document.getElementById('edit-name').value = user.name || "";
             document.getElementById('edit-kana').value = user.kana || "";
             document.getElementById('edit-studentId').value = user.studentId || "";
+            document.getElementById('edit-year').value = user.year || "";
+            document.getElementById('edit-tel').value = user.tel || "";
             document.getElementById('edit-role').value = user.role || "";
             document.getElementById('edit-job').value = user.job || "";
             document.getElementById('edit-part').value = user.part || "";
@@ -715,6 +719,8 @@
                     name: document.getElementById('edit-name').value,
                     kana: document.getElementById('edit-kana').value,
                     studentId: document.getElementById('edit-studentId').value,
+                    year: document.getElementById('edit-year').value,
+                    tel: document.getElementById('edit-tel').value,
                     affiliations: newAffiliations,
                     job: document.getElementById('edit-job').value,
                     part: document.getElementById('edit-part').value, 
