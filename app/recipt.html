@@ -111,6 +111,25 @@
             const fontBytes = await fontResponse.arrayBuffer();
             const customFont = await pdfDoc.embedFont(fontBytes);
 
+
+            // ーーーー ここからデバッグ用グリッド描画 ーーーー
+            const { rgb } = PDFLib;
+            const gridColor = rgb(0.8, 0.5, 0.5); // 薄い赤色
+            const firstPageWidth = firstPage.getWidth();
+            const firstPageHeight = firstPage.getHeight();
+
+            // 縦線を引く
+            for (let i = 0; i < firstPageWidth; i += 50) {
+                firstPage.drawLine({ start: { x: i, y: 0 }, end: { x: i, y: firstPageHeight }, thickness: 0.5, color: gridColor });
+                firstPage.drawText(String(i), { x: i + 2, y: 10, size: 8, font: customFont, color: gridColor });
+            }
+            // 横線を引く
+            for (let i = 0; i < firstPageHeight; i += 50) {
+                firstPage.drawLine({ start: { x: 0, y: i }, end: { x: firstPageWidth, y: i }, thickness: 0.5, color: gridColor });
+                firstPage.drawText(String(i), { x: 10, y: i + 2, size: 8, font: customFont, color: gridColor });
+            }
+            // ーーーー ここまでデバッグ用グリッド描画 ーーーー
+
             const pages = pdfDoc.getPages();
             const firstPage = pages[0];
             const textColor = rgb(0, 0, 0); // 文字色：黒
