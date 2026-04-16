@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>裏方部 領収書発行システム</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 600px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+        }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;}
+        button:hover { background: #0056b3; }
+        #status { margin-top: 15px; font-weight: bold; color: green; }
+    </style>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://unpkg.com/@pdf-lib/fontkit/dist/fontkit.umd.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>領収書データ入力</h2>
+    <form id="receiptForm">
+        <div class="form-group">
+            <label>No.</label>
+            <input type="text" id="receiptNo" placeholder="000">
+        </div>
+        <div class="form-group">
+            <label>発行日</label>
+            <input type="date" id="date">
+        </div>
+        <div class="form-group">
+            <label>宛名 (御中)</label>
+            <input type="text" id="targetName" placeholder="〇〇株式会社">
+        </div>
+        <div class="form-group">
+            <label>金額 (税込)</label>
+            <input type="number" id="amount" placeholder="10000">
+        </div>
+        <div class="form-group">
+            <label>但し書き</label>
+            <input type="text" id="proviso" value="機材代として">
+        </div>
+        <hr>
+        <button type="button" id="generateBtn">発行 ＆ 履歴を保存</button>
+        <div id="status"></div>
+    </form>
+</div>
+
+<script type="module">
+    // Firebase SDKのインポート (バージョン10系を使用)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    // ご提示いただいたFirebase設定
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWtITnn5uMOPBgOY0Bd7Rt5IN1ry8XoJI",
+      authDomain: "urakata-app.firebaseapp.com",
+      projectId: "urakata-app",
+      storageBucket: "urakata-app.firebasestorage.app",
+      messagingSenderId: "407777765696",
+      appId: "1:407777765696:web:045c2d94729022b4eab2a5",
+      measurementId: "G-9ZRMD26XNJ"
+    };
+
+    // Firebaseの初期化
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ボタンをクリックしたときの処理
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerText = "処理中...";
+        statusDiv.style.color = "blue";
+
+        // 1. フォームの入力値を取得
+        const receiptNo = document.getElementById('receiptNo').value || "000";
+        const date = document.getElementById('date').value || new Date().toLocaleDateString('ja-JP');
+        const targetName = document.getElementById('targetName').value || "お客様";
+        const amount = document.getElementById('amount').value || "0";
+        const proviso = document.getElementById('proviso').value || "機材代として";
+
+        try {
+            // ==========================================
+            // ① Firebase (Firestore) へ履歴を保存
+            // ==========================================
+            await addDoc(collection(db, "receipts"), {
+                no: receiptNo,
+                targetName: targetName,
+                amount: Number(amount),
+                proviso: proviso,
+                issueDate: date,
+                createdAt: serverTimestamp()
+            });
+            console.log("Firestoreに履歴を保存しました");
+
+            // ==========================================
+            // ② PDFの生成とダウンロード処理
+            // ==========================================
+            const { PDFDocument, rgb } = PDFLib;
+            
+            // テンプレートPDFの読み込み（同じ階層に配置してください）
+            const url = './裏方部 領収書.pdf'; 
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("テンプレートPDFが見つかりません。");
+            
+            const existingPdfBytes = await response.arrayBuffer();
+            const pdfDoc = await PDFDocument.load(existingPdfBytes);
+            
+            // 日本語フォントの設定
+            pdfDoc.registerFontkit(fontkit);
+            const fontUrl = 'https://raw.githubusercontent.com/googlefonts/noto-fonts/master/hinted/ttf/NotoSansJP/NotoSansJP-Regular.ttf';
+            const fontBytes = await fetch(fontUrl).then(res => res.arrayBuffer());
+            const customFont = await pdfDoc.embedFont(fontBytes);
+
+            const pages = pdfDoc.getPages();
+            const firstPage = pages[0];
+
+            // 情報をPDFに書き込む（座標は実際のPDFに合わせて微調整してください）
+            firstPage.drawText(receiptNo, { x: 450, y: 730, size: 15, font: customFont });
+            firstPage.drawText(date, { x: 450, y: 710, size: 12, font: customFont });
+            firstPage.drawText(`${targetName} 御中`, { x: 100, y: 650, size: 20, font: customFont });
+            firstPage.drawText(`￥${Number(amount).toLocaleString()}-`, { x: 200, y: 580, size: 25, font: customFont });
+            firstPage.drawText(`但し ${proviso}`, { x: 150, y: 540, size: 14, font: customFont });
+
+            // PDFをダウンロード
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `領収書_${receiptNo}.pdf`;
+            link.click();
+
+            statusDiv.innerText = "発行と履歴の保存が完了しました！";
+            statusDiv.style.color = "green";
+
+        } catch (error) {
+            console.error('エラー:', error);
+            statusDiv.innerText = 'エラーが発生しました: ' + error.message;
+            statusDiv.style.color = "red";
+        }
+    });
+</script>
+
+</body>
+</html>
