@@ -91,60 +91,37 @@
                 issueDate: date,
                 createdAt: serverTimestamp()
             });
-            console.log("Firestoreに履歴を保存しました");
 
             // ② PDFの生成処理
-            const { PDFDocument, rgb } = PDFLib;
+            const { PDFDocument, rgb } = PDFLib; // ★rgbの宣言はここで1回だけ！
             
             // テンプレートPDFの読み込み
-            const pdfUrl = './template.pdf'; 
-            const pdfResponse = await fetch(pdfUrl);
-            if (!pdfResponse.ok) throw new Error("テンプレートPDF(template.pdf)が見つかりません。");
+            const pdfResponse = await fetch('./template.pdf');
+            if (!pdfResponse.ok) throw new Error("template.pdf が見つかりません。");
             const existingPdfBytes = await pdfResponse.arrayBuffer();
             const pdfDoc = await PDFDocument.load(existingPdfBytes);
             
-            // 日本語フォントの読み込みと設定
+            // 日本語フォントの読み込み
             pdfDoc.registerFontkit(fontkit);
-            const fontUrl = './NotoSansJP-Regular.ttf'; // 必ず「JP」が入ったファイルをアップロードしてください
-            const fontResponse = await fetch(fontUrl);
-            if (!fontResponse.ok) throw new Error("日本語フォント(NotoSansJP-Regular.ttf)が見つかりません。");
+            const fontResponse = await fetch('./NotoSansJP-Regular.ttf');
+            if (!fontResponse.ok) throw new Error("NotoSansJP-Regular.ttf が見つかりません。");
             const fontBytes = await fontResponse.arrayBuffer();
             const customFont = await pdfDoc.embedFont(fontBytes);
-
-
-            // ーーーー ここからデバッグ用グリッド描画 ーーーー
-            const { rgb } = PDFLib;
-            const gridColor = rgb(0.8, 0.5, 0.5); // 薄い赤色
-            const firstPageWidth = firstPage.getWidth();
-            const firstPageHeight = firstPage.getHeight();
-
-            // 縦線を引く
-            for (let i = 0; i < firstPageWidth; i += 50) {
-                firstPage.drawLine({ start: { x: i, y: 0 }, end: { x: i, y: firstPageHeight }, thickness: 0.5, color: gridColor });
-                firstPage.drawText(String(i), { x: i + 2, y: 10, size: 8, font: customFont, color: gridColor });
-            }
-            // 横線を引く
-            for (let i = 0; i < firstPageHeight; i += 50) {
-                firstPage.drawLine({ start: { x: 0, y: i }, end: { x: firstPageWidth, y: i }, thickness: 0.5, color: gridColor });
-                firstPage.drawText(String(i), { x: 10, y: i + 2, size: 8, font: customFont, color: gridColor });
-            }
-            // ーーーー ここまでデバッグ用グリッド描画 ーーーー
 
             const pages = pdfDoc.getPages();
             const firstPage = pages[0];
             const textColor = rgb(0, 0, 0); // 文字色：黒
 
-            // 情報をPDFに書き込む（文字被りを防ぐための座標調整版）
-            // No.
-            firstPage.drawText(receiptNo, { x: 500, y: 755, size: 12, font: customFont, color: textColor });
-            // 発行日
-            firstPage.drawText(date, { x: 460, y: 730, size: 12, font: customFont, color: textColor });
-            // 宛名
-            firstPage.drawText(`${targetName} 御中`, { x: 120, y: 665, size: 18, font: customFont, color: textColor });
-            // 金額
-            firstPage.drawText(`￥${Number(amount).toLocaleString()}-`, { x: 230, y: 585, size: 24, font: customFont, color: textColor });
-            // 但し書き
-            firstPage.drawText(`但し ${proviso}`, { x: 180, y: 545, size: 14, font: customFont, color: textColor });
+            // ==========================================
+            // 📝 座標の設定（x: 左右, y: 上下）
+            // 左下が (x:0, y:0) です。ズレる場合はここの数字を変更してください！
+            // ==========================================
+            firstPage.drawText(receiptNo, { x: 480, y: 730, size: 12, font: customFont, color: textColor });
+            firstPage.drawText(date, { x: 450, y: 710, size: 12, font: customFont, color: textColor });
+            firstPage.drawText(`${targetName} 御中`, { x: 100, y: 650, size: 18, font: customFont, color: textColor });
+            firstPage.drawText(`￥${Number(amount).toLocaleString()}-`, { x: 200, y: 580, size: 24, font: customFont, color: textColor });
+            firstPage.drawText(`但し ${proviso}`, { x: 150, y: 540, size: 14, font: customFont, color: textColor });
+            // ==========================================
 
             // PDFを保存してダウンロード
             const pdfBytes = await pdfDoc.save();
