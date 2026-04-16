@@ -102,7 +102,7 @@
             const { PDFDocument, rgb } = PDFLib;
             
             // テンプレートPDFの読み込み（同じ階層に配置してください）
-            const url = './裏方部 領収書.pdf'; 
+            const url = './template.pdf';; 
             const response = await fetch(url);
             if (!response.ok) throw new Error("テンプレートPDFが見つかりません。");
             
