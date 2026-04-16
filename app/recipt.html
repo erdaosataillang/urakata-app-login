@@ -32,7 +32,7 @@
             <input type="date" id="date">
         </div>
         <div class="form-group">
-            <label>宛名 (御中)</label>
+            <label>宛名</label>
             <input type="text" id="targetName" placeholder="〇〇株式会社">
         </div>
         <div class="form-group">
@@ -50,11 +50,9 @@
 </div>
 
 <script type="module">
-    // Firebase SDKのインポート
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    // Firebase設定
     const firebaseConfig = {
       apiKey: "AIzaSyAWtITnn5uMOPBgOY0Bd7Rt5IN1ry8XoJI",
       authDomain: "urakata-app.firebaseapp.com",
@@ -65,7 +63,6 @@
       measurementId: "G-9ZRMD26XNJ"
     };
 
-    // Firebaseの初期化
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
@@ -74,7 +71,6 @@
         statusDiv.innerText = "処理中...";
         statusDiv.style.color = "blue";
 
-        // フォームの入力値を取得
         const receiptNo = document.getElementById('receiptNo').value || "000";
         const date = document.getElementById('date').value || new Date().toLocaleDateString('ja-JP');
         const targetName = document.getElementById('targetName').value || "お客様";
@@ -82,7 +78,7 @@
         const proviso = document.getElementById('proviso').value || "機材代として";
 
         try {
-            // ① Firebase (Firestore) へ履歴を保存
+            // ① Firebase保存
             await addDoc(collection(db, "receipts"), {
                 no: receiptNo,
                 targetName: targetName,
@@ -92,16 +88,13 @@
                 createdAt: serverTimestamp()
             });
 
-            // ② PDFの生成処理
-            const { PDFDocument, rgb } = PDFLib; // ★rgbの宣言はここで1回だけ！
-            
-            // テンプレートPDFの読み込み
+            // ② PDF生成
+            const { PDFDocument, rgb } = PDFLib;
             const pdfResponse = await fetch('./template.pdf');
             if (!pdfResponse.ok) throw new Error("template.pdf が見つかりません。");
             const existingPdfBytes = await pdfResponse.arrayBuffer();
             const pdfDoc = await PDFDocument.load(existingPdfBytes);
             
-            // 日本語フォントの読み込み
             pdfDoc.registerFontkit(fontkit);
             const fontResponse = await fetch('./NotoSansJP-Regular.ttf');
             if (!fontResponse.ok) throw new Error("NotoSansJP-Regular.ttf が見つかりません。");
@@ -110,20 +103,34 @@
 
             const pages = pdfDoc.getPages();
             const firstPage = pages[0];
-            const textColor = rgb(0, 0, 0); // 文字色：黒
+            const textColor = rgb(0, 0, 0);
 
             // ==========================================
-            // 📝 座標の設定（x: 左右, y: 上下）
-            // 左下が (x:0, y:0) です。ズレる場合はここの数字を変更してください！
+            // 宛名の中央揃え計算ロジック
             // ==========================================
+            const nameText = `${targetName}`;
+            const nameSize = 18;
+            const textWidth = customFont.widthOfTextAtSize(nameText, nameSize);
+            
+            // 宛名エリアの「中心」となるX座標を指定してください。
+            // 指定のx:120付近が左端だとすると、200〜250あたりが中心になると推測されます。
+            const centerOfNameArea = 200; 
+            const nameStartX = centerOfNameArea - (textWidth / 2);
+
+            // ==========================================
+            // 指定いただいた最新座標での印字
+            // ==========================================
+            // No.
             firstPage.drawText(receiptNo, { x: 380, y: 738, size: 12, font: customFont, color: textColor });
+            // 発行日
             firstPage.drawText(date, { x: 400, y: 710, size: 12, font: customFont, color: textColor });
-            firstPage.drawText(`${targetName}`, { x: 120, y: 735, size: 18, font: customFont, color: textColor });
+            // 宛名 (計算した中央位置)
+            firstPage.drawText(nameText, { x: nameStartX, y: 735, size: nameSize, font: customFont, color: textColor });
+            // 金額
             firstPage.drawText(`￥${Number(amount).toLocaleString()}-`, { x: 220, y: 672, size: 24, font: customFont, color: textColor });
+            // 但し書き
             firstPage.drawText(`${proviso}`, { x: 150, y: 648, size: 14, font: customFont, color: textColor });
-            // ==========================================
 
-            // PDFを保存してダウンロード
             const pdfBytes = await pdfDoc.save();
             const blob = new Blob([pdfBytes], { type: 'application/pdf' });
             const link = document.createElement('a');
