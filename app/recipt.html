@@ -118,6 +118,7 @@
             // ==========================================
             firstPage.drawText(receiptNo, { x: 380, y: 738, size: 12, font: customFont, color: textColor });
             firstPage.drawText(date, { x: 450, y: 710, size: 12, font: customFont, color: textColor });
+            firstPage.drawText(`${targetName}`, { x: 100, y: 650, size: 18, font: customFont, color: textColor });
             firstPage.drawText(`￥${Number(amount).toLocaleString()}-`, { x: 220, y: 700, size: 24, font: customFont, color: textColor });
             firstPage.drawText(`但し ${proviso}`, { x: 150, y: 540, size: 14, font: customFont, color: textColor });
             // ==========================================
