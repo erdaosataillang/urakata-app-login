@@ -43,6 +43,10 @@
             <label>但し書き</label>
             <input type="text" id="proviso" value="機材代として">
         </div>
+        <div class="form-group">
+            <label>内訳の内容 (品名など)</label>
+            <input type="text" id="breakdownText" value="音響・照明機材費">
+        </div>
         <hr>
         <button type="button" id="generateBtn">発行 ＆ 履歴を保存</button>
         <div id="status"></div>
@@ -76,14 +80,16 @@
         const targetName = document.getElementById('targetName').value || "お客様";
         const amount = document.getElementById('amount').value || "0";
         const proviso = document.getElementById('proviso').value || "機材代として";
+        const breakdownText = document.getElementById('breakdownText').value || ""; // 💡 追加
 
         try {
-            // ① Firebase保存
+            // ① Firebase保存 (内訳情報も追加)
             await addDoc(collection(db, "receipts"), {
                 no: receiptNo,
                 targetName: targetName,
                 amount: Number(amount),
                 proviso: proviso,
+                breakdownText: breakdownText,
                 issueDate: date,
                 createdAt: serverTimestamp()
             });
@@ -111,14 +117,11 @@
             const nameText = `${targetName}`;
             const nameSize = 18;
             const textWidth = customFont.widthOfTextAtSize(nameText, nameSize);
-            
-            // 宛名エリアの「中心」となるX座標を指定してください。
-            // 指定のx:120付近が左端だとすると、200〜250あたりが中心になると推測されます。
             const centerOfNameArea = 200; 
             const nameStartX = centerOfNameArea - (textWidth / 2);
 
             // ==========================================
-            // 指定いただいた最新座標での印字
+            // 印字処理
             // ==========================================
             // No.
             firstPage.drawText(receiptNo, { x: 380, y: 738, size: 12, font: customFont, color: textColor });
@@ -126,10 +129,17 @@
             firstPage.drawText(date, { x: 400, y: 710, size: 12, font: customFont, color: textColor });
             // 宛名 (計算した中央位置)
             firstPage.drawText(nameText, { x: nameStartX, y: 735, size: nameSize, font: customFont, color: textColor });
-            // 金額
+            // メイン金額 (大きいサイズ)
             firstPage.drawText(`￥${Number(amount).toLocaleString()}-`, { x: 220, y: 672, size: 24, font: customFont, color: textColor });
             // 但し書き
             firstPage.drawText(`${proviso}`, { x: 150, y: 648, size: 14, font: customFont, color: textColor });
+
+            // 💡 追加：内訳部分の印字
+            // ※PDFのレイアウトに合わせて x, y 座標を調整してください
+            firstPage.drawText(breakdownText, { x: 120, y: 550, size: 12, font: customFont, color: textColor });
+            
+            // 💡 追加：内訳の金額 (メイン金額と同じ値を、サイズ12で印字)
+            firstPage.drawText(`￥${Number(amount).toLocaleString()}-`, { x: 350, y: 550, size: 12, font: customFont, color: textColor });
 
             const pdfBytes = await pdfDoc.save();
             const blob = new Blob([pdfBytes], { type: 'application/pdf' });
